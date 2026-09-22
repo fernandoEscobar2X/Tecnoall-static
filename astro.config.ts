@@ -5,7 +5,7 @@ import { defineConfig, envField } from 'astro/config';
 import { loadEnv } from 'vite';
 
 const env = loadEnv(process.env.NODE_ENV ?? 'development', process.cwd(), '');
-const site = env.PUBLIC_SITE_URL || 'https://tecnoall.com';
+const site = env.PUBLIC_SITE_URL || 'https://www.tecnoall.com.mx';
 
 export default defineConfig({
   site,
@@ -37,7 +37,7 @@ export default defineConfig({
       PUBLIC_SITE_URL: envField.string({
         context: 'client',
         access: 'public',
-        default: 'https://tecnoall.com',
+        default: 'https://www.tecnoall.com.mx',
       }),
     },
   },

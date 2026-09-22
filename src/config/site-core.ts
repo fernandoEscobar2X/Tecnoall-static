@@ -1,4 +1,4 @@
-const DEFAULT_SITE_URL = 'https://tecnoall.com';
+const DEFAULT_SITE_URL = 'https://www.tecnoall.com.mx';
 
 export function createSiteConfig(siteUrlInput?: string) {
   const siteUrl = (siteUrlInput || DEFAULT_SITE_URL).replace(/\/+$/, '');
