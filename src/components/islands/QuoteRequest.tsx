@@ -134,22 +134,23 @@ export default function QuoteRequest({ whatsappHref }: Props) {
     event.preventDefault();
     const element = event.currentTarget;
     const form = new FormData(element);
-    const name = String(form.get('name') ?? '');
-    const company = String(form.get('company') ?? '');
+    const name = String(form.get('nombre') ?? '');
+    const company = String(form.get('empresa') ?? '');
     const senderEmail = String(form.get('email') ?? '');
-    const phone = String(form.get('phone') ?? '');
-    const requestType = String(form.get('requestType') ?? 'Solicitud comercial');
-    const message = String(form.get('message') ?? '');
+    const phone = String(form.get('telefono') ?? '');
+    const requestType = String(form.get('tipo_solicitud') ?? 'Solicitud comercial');
+    const message = String(form.get('requerimiento') ?? '');
     const submitter = event.nativeEvent.submitter as HTMLButtonElement | null;
     const products = lines.length
       ? lines.map((line) => `- ${line.title}`).join('\n')
       : 'Sin productos preseleccionados';
-    const subject = `${requestType} — ${company || name}`;
     const body = `${requestType}\n\nNombre: ${name}\nEmpresa: ${company || 'No indicada'}\nCorreo: ${senderEmail || 'No indicado'}\nTeléfono: ${phone || 'No indicado'}\n\nSelección:\n${products}\n\nSolicitud:\n${message}`;
 
     if (submitter?.value === 'email') {
-      form.set('selection', products);
-      form.set('subject', subject);
+      form.set('productos_seleccionados', products);
+      form.set('pagina', window.location.href);
+      form.set('fecha_envio', new Date().toISOString());
+      form.set('canal', 'Correo');
       setSubmissionStatus('submitting');
       try {
         await submitNetlifyForm(FORM_NAME, form);
@@ -216,9 +217,17 @@ export default function QuoteRequest({ whatsappHref }: Props) {
           onSubmit={handleSubmit}
         >
           <input type="hidden" name="form-name" value={FORM_NAME} />
-          <input type="hidden" name="selection" value="" />
-          <input type="hidden" name="subject" value="Nueva solicitud comercial" />
-          <p hidden>
+          <input type="hidden" name="productos_seleccionados" value="" />
+          <input
+            type="hidden"
+            name="subject"
+            value="[Tecno All] Nueva solicitud de cotización · %{submissionId}"
+            data-remove-prefix
+          />
+          <input type="hidden" name="origen" value="Cotizador corporativo" />
+          <input type="hidden" name="pagina" value="" />
+          <input type="hidden" name="fecha_envio" value="" />
+          <p className="netlify-honeypot" aria-hidden="true">
             <label>
               No llenar este campo: <input name="website" autoComplete="off" tabIndex={-1} />
             </label>
@@ -239,7 +248,7 @@ export default function QuoteRequest({ whatsappHref }: Props) {
                 <input
                   id="request-project"
                   type="radio"
-                  name="requestType"
+                  name="tipo_solicitud"
                   value="Proyecto de automatización"
                   defaultChecked
                 />
@@ -252,7 +261,7 @@ export default function QuoteRequest({ whatsappHref }: Props) {
                 <input
                   id="request-supply"
                   type="radio"
-                  name="requestType"
+                  name="tipo_solicitud"
                   value="Suministro industrial"
                 />
                 <span>
@@ -264,8 +273,9 @@ export default function QuoteRequest({ whatsappHref }: Props) {
             <label className="quote-dialog__message">
               Descripción del requerimiento
               <textarea
-                name="message"
+                name="requerimiento"
                 rows={4}
+                maxLength={4000}
                 required
                 enterKeyHint="next"
                 placeholder="Proyecto, proceso o productos requeridos"
@@ -293,10 +303,11 @@ export default function QuoteRequest({ whatsappHref }: Props) {
                 Nombre
                 <input
                   type="text"
-                  name="name"
+                  name="nombre"
                   autoComplete="name"
                   autoCapitalize="words"
                   enterKeyHint="next"
+                  maxLength={100}
                   required
                 />
               </label>
@@ -304,10 +315,11 @@ export default function QuoteRequest({ whatsappHref }: Props) {
                 Empresa
                 <input
                   type="text"
-                  name="company"
+                  name="empresa"
                   autoComplete="organization"
                   autoCapitalize="words"
                   enterKeyHint="next"
+                  maxLength={120}
                 />
               </label>
               <label>
@@ -317,12 +329,19 @@ export default function QuoteRequest({ whatsappHref }: Props) {
                   name="email"
                   autoComplete="email"
                   enterKeyHint="next"
+                  maxLength={254}
                   required
                 />
               </label>
               <label>
                 Teléfono
-                <input type="tel" name="phone" autoComplete="tel" enterKeyHint="done" />
+                <input
+                  type="tel"
+                  name="telefono"
+                  autoComplete="tel"
+                  enterKeyHint="done"
+                  maxLength={30}
+                />
               </label>
             </div>
             <div className="quote-dialog__submit">
@@ -332,7 +351,7 @@ export default function QuoteRequest({ whatsappHref }: Props) {
               <button
                 className="action action--primary"
                 type="submit"
-                name="channel"
+                name="canal"
                 value="whatsapp"
                 disabled={submissionStatus === 'submitting'}
               >
@@ -340,7 +359,7 @@ export default function QuoteRequest({ whatsappHref }: Props) {
               </button>
               <button
                 type="submit"
-                name="channel"
+                name="canal"
                 value="email"
                 disabled={submissionStatus === 'submitting'}
               >

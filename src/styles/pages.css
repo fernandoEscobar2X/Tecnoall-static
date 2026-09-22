@@ -272,7 +272,7 @@
   background: var(--paper);
 }
 
-.cta-band--paper p {
+.cta-band.cta-band--paper p {
   color: var(--muted);
 }
 

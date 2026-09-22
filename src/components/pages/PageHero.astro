@@ -18,10 +18,11 @@ const { title, lead, image, imageAlt = '', compact = false } = Astro.props;
     <Image
       src={image}
       alt={imageAlt}
-      widths={[960, 1440, 2000]}
+      widths={[480, 720, 960, 1440]}
       sizes="100vw"
       loading="eager"
       fetchpriority="high"
+      decoding="sync"
     />
   </figure>
   <div class="about-hero__shade" aria-hidden="true"></div>

@@ -95,8 +95,16 @@ import UiIcon from '@components/ui/UiIcon.astro';
         data-whatsapp-href={c.contact.whatsappHref}
       >
         <input type="hidden" name="form-name" value="contacto" />
-        <input type="hidden" name="subject" value="Nueva solicitud desde tecnoall.com" />
-        <p hidden>
+        <input
+          type="hidden"
+          name="subject"
+          value="[Tecno All] Nuevo contacto · %{submissionId}"
+          data-remove-prefix
+        />
+        <input type="hidden" name="origen" value="Sobre nosotros" />
+        <input type="hidden" name="pagina" value="" />
+        <input type="hidden" name="fecha_envio" value="" />
+        <p class="netlify-honeypot" aria-hidden="true">
           <label
             >No llenar este campo: <input name="website" autocomplete="off" tabindex="-1" /></label
           >
@@ -106,9 +114,10 @@ import UiIcon from '@components/ui/UiIcon.astro';
             <span>Nombre <em aria-hidden="true">*</em></span>
             <input
               type="text"
-              name="name"
+              name="nombre"
               autocomplete="name"
               placeholder="Nombre completo"
+              maxlength="100"
               required
             />
           </label>
@@ -116,9 +125,10 @@ import UiIcon from '@components/ui/UiIcon.astro';
             <span>Empresa</span>
             <input
               type="text"
-              name="company"
+              name="empresa"
               autocomplete="organization"
               placeholder="Nombre empresa"
+              maxlength="120"
             />
           </label>
         </div>
@@ -131,18 +141,25 @@ import UiIcon from '@components/ui/UiIcon.astro';
               name="email"
               autocomplete="email"
               placeholder="nombre@empresa.com"
+              maxlength="254"
               required
             />
           </label>
           <label>
             <span>Teléfono</span>
-            <input type="tel" name="phone" autocomplete="tel" placeholder="(664) 000 0000" />
+            <input
+              type="tel"
+              name="telefono"
+              autocomplete="tel"
+              placeholder="(664) 000 0000"
+              maxlength="30"
+            />
           </label>
         </div>
 
         <label>
           <span>Tipo de solicitud</span>
-          <select name="requestType">
+          <select name="tipo_solicitud">
             <option>Proyecto de automatización</option>
             <option>Suministro industrial</option>
             <option>Servicio o mantenimiento</option>
@@ -153,17 +170,18 @@ import UiIcon from '@components/ui/UiIcon.astro';
         <label>
           <span>Requerimiento <em aria-hidden="true">*</em></span>
           <textarea
-            name="message"
+            name="requerimiento"
             rows="4"
+            maxlength="4000"
             placeholder="Describa el proceso, el equipo instalado o los productos que necesita."
             required></textarea>
         </label>
 
         <div class="request-form__actions">
-          <button class="request-form__send" type="submit" name="channel" value="email">
+          <button class="request-form__send" type="submit" name="canal" value="email">
             Enviar solicitud
           </button>
-          <button class="request-form__alt" type="submit" name="channel" value="whatsapp">
+          <button class="request-form__alt" type="submit" name="canal" value="whatsapp">
             Enviarla por WhatsApp
           </button>
         </div>
@@ -194,12 +212,12 @@ import UiIcon from '@components/ui/UiIcon.astro';
   form?.addEventListener('submit', async (event) => {
     event.preventDefault();
     const data = new FormData(form);
-    const name = String(data.get('name') ?? '');
-    const company = String(data.get('company') ?? '');
+    const name = String(data.get('nombre') ?? '');
+    const company = String(data.get('empresa') ?? '');
     const email = String(data.get('email') ?? '');
-    const phone = String(data.get('phone') ?? '');
-    const requestType = String(data.get('requestType') ?? 'Otro');
-    const message = String(data.get('message') ?? '');
+    const phone = String(data.get('telefono') ?? '');
+    const requestType = String(data.get('tipo_solicitud') ?? 'Otro');
+    const message = String(data.get('requerimiento') ?? '');
     const submitter = (event as SubmitEvent).submitter as HTMLButtonElement | null;
     const whatsappHref = form.dataset.whatsappHref ?? '';
     const body = `${requestType}\n\nNombre: ${name}\nEmpresa: ${company || 'No indicada'}\nCorreo: ${email}\nTeléfono: ${phone || 'No indicado'}\n\nRequerimiento:\n${message}`;
@@ -217,7 +235,9 @@ import UiIcon from '@components/ui/UiIcon.astro';
     const submitButtons = [...form.querySelectorAll<HTMLButtonElement>('button[type="submit"]')];
     submitButtons.forEach((button) => (button.disabled = true));
     if (status) status.textContent = 'Enviando solicitud…';
-    data.set('subject', `${requestType} — ${company || name}`);
+    data.set('pagina', window.location.href);
+    data.set('fecha_envio', new Date().toISOString());
+    data.set('canal', 'Correo');
 
     try {
       await submitNetlifyForm('contacto', data);

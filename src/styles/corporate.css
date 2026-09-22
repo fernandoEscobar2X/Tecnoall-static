@@ -284,6 +284,18 @@
   background: var(--color-brand-bright);
 }
 
+.netlify-honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .site-menu {
   display: none;
   justify-self: end;
@@ -2917,13 +2929,8 @@ html[data-whatsapp-panel='open'] .whatsapp-float {
     display: none;
   }
 
-  .site-header__actions a,
-  .site-header__actions > button[data-open-quote] {
-    display: none;
-  }
-
   .site-header__actions {
-    padding: 6px 8px;
+    display: none;
   }
 
   .site-menu {

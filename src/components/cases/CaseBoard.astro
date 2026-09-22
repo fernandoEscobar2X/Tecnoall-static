@@ -8,10 +8,9 @@ interface Props {
   index?: number;
 }
 
-const { caseStudy, index = 0 } = Astro.props;
+const { caseStudy } = Astro.props;
 const scope = caseStudy.homeScope ?? caseStudy.services.join(' · ');
 const facts = [caseStudy.location, caseStudy.year, caseStudy.brands.join(', ')];
-const imageLoading = index < 3 ? 'eager' : 'lazy';
 ---
 
 <article class="case-entry" id={caseStudy.slug} data-case-set>
@@ -20,9 +19,10 @@ const imageLoading = index < 3 ? 'eager' : 'lazy';
       <Image
         src={caseStudy.image}
         alt=""
-        widths={[480, 720, 960]}
+        widths={[400, 480, 720, 960]}
         sizes="(min-width: 1100px) 33vw, (min-width: 720px) 50vw, 100vw"
-        loading={imageLoading}
+        loading="lazy"
+        fetchpriority="low"
       />
     </span>
     <span class="case-card__body">

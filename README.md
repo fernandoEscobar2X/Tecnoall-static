@@ -29,13 +29,15 @@ CSS, JavaScript y medios estáticos; no se despliega ningún proceso Node ni fun
 
 Los formularios `contacto` y `solicitud-cotizacion` usan Netlify Forms. Después del primer deploy:
 
-1. activar la detección de formularios en **Forms**;
-2. hacer un deploy nuevo para que Netlify registre ambos formularios;
-3. enviar una solicitud de prueba y comprobar que aparece en **Forms**;
-4. cuando Tecno All defina el destinatario, crear la notificación en **Forms > Submission notifications**.
+1. activar la detección de formularios en **Forms** y volver a desplegar si estaba desactivada;
+2. confirmar que Netlify registró `contacto` y `solicitud-cotizacion` como formularios distintos;
+3. en **Forms > Submission notifications**, crear una notificación para todos los formularios con
+   destinatario `noemi@tecnoall.com`;
+4. enviar una solicitud real desde el deploy preview y comprobar recepción, asunto, `Reply-To`,
+   campos de contexto y contenido antes de conectar el dominio productivo.
 
-Hasta configurar esa notificación, las solicitudes se almacenan en Netlify pero no se reenvían por
-correo. El correo receptor no se guarda en el código.
+El destinatario se administra en Netlify y no se expone en el HTML. El campo `email` conserva ese
+nombre porque Netlify lo utiliza como `Reply-To` de la notificación.
 
 ## Alcance deliberado
 
