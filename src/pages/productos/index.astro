@@ -1,0 +1,64 @@
+---
+import CtaBand from '@components/pages/CtaBand.astro';
+import PageHero from '@components/pages/PageHero.astro';
+import ProductCatalog from '@components/catalog/ProductCatalog.astro';
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import { homeContent as c } from '@/content/home';
+import { pageSchema } from '@lib/seo/schema';
+
+const title = 'Productos de automatización y control';
+const description = c.productsIntro.body;
+const hero = c.solutions[1]!;
+---
+
+<SiteLayout
+  seo={{
+    title,
+    description,
+    image: '/og/corporativo.png',
+    imageAlt: hero.imageAlt,
+    jsonLd: pageSchema({
+      name: title,
+      description,
+      path: '/productos/',
+      image: '/og/corporativo.png',
+      type: 'CollectionPage',
+      breadcrumbs: [
+        { name: 'Inicio', path: '/' },
+        { name: 'Productos', path: '/productos/' },
+      ],
+    }),
+  }}
+>
+  <PageHero
+    title="Tecnología para control, conexión y protección"
+    lead={description}
+    image={hero.image}
+    imageAlt={hero.imageAlt}
+  >
+    <Fragment slot="actions">
+      <button class="about-hero__brochure" type="button" data-open-quote>
+        Solicitar cotización
+      </button>
+    </Fragment>
+  </PageHero>
+
+  <section class="page-section" aria-labelledby="catalog-title">
+    <div class="site-shell">
+      <header class="section-heading section-heading--products" data-reveal>
+        <div>
+          <h2 id="catalog-title">{c.productsIntro.title}</h2>
+        </div>
+        <a href="/marcas/">Ver marcas</a>
+      </header>
+
+      <ProductCatalog />
+    </div>
+  </section>
+
+  <CtaBand
+    tone="paper"
+    title="¿No encuentra el componente que necesita?"
+    body="Comparta la marca, el número de parte o la aplicación. Tecno All confirma disponibilidad y equivalencias."
+  />
+</SiteLayout>

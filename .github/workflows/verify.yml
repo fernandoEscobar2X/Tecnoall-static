@@ -1,0 +1,58 @@
+name: verify
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Secretos
+        run: npm run security:secrets
+
+      - name: Formato
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Tipos y diagnóstico de Astro
+        run: npm run check
+
+      - name: Build estático
+        run: npx astro build
+
+      - name: Dependencias de producción
+        run: npm run security:prod
+
+      - name: Verificar artefacto público
+        shell: bash
+        run: |
+          test -f dist/index.html
+          test -f dist/_headers
+          test ! -e dist/tienda
+          test ! -e dist/admin
+          test ! -e dist/api
+          ! grep -R -E "COMMERCE_API_URL|INTERNAL_SERVICE_TOKEN|Bah[ií]a Chileno|bahia-chileno" dist

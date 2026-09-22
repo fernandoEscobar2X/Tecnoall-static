@@ -1,0 +1,105 @@
+---
+import { Image } from 'astro:assets';
+import PageHero from '@components/pages/PageHero.astro';
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import { homeContent } from '@/content/home';
+import { absoluteUrl } from '@config/site';
+import { itemListSchema, pageSchema } from '@lib/seo/schema';
+import controlImage from '@assets/tecnoall/industria/panel-control.png';
+
+const { authorized, additional } = homeContent.brands;
+const title = 'Marcas de automatización y control industrial';
+const description = homeContent.brandsIntro.body;
+const canonical = absoluteUrl('/marcas/');
+const brandItems = [...authorized, ...additional].map((brand) => ({
+  name: brand.name,
+  url: brand.url,
+}));
+---
+
+<SiteLayout
+  seo={{
+    title,
+    description,
+    image: '/og/corporativo.png',
+    imageAlt: 'Ingeniería y automatización industrial de Tecno All',
+    jsonLd: pageSchema({
+      name: title,
+      description,
+      path: '/marcas/',
+      image: '/og/corporativo.png',
+      type: 'CollectionPage',
+      breadcrumbs: [
+        { name: 'Inicio', path: '/' },
+        { name: 'Marcas', path: '/marcas/' },
+      ],
+      mainEntityId: `${canonical}#items`,
+      additionalNodes: [itemListSchema('Fabricantes industriales', canonical, brandItems)],
+    }),
+  }}
+>
+  <PageHero
+    title={homeContent.brandsIntro.title}
+    lead={homeContent.brandsIntro.body}
+    image={controlImage}
+    imageAlt="Componentes de control industrial en un tablero integrado por Tecno All"
+  >
+    <Fragment slot="actions">
+      <a class="about-hero__brochure" href="/productos/">Ver catálogo</a>
+    </Fragment>
+  </PageHero>
+
+  <section class="brand-decks" aria-labelledby="authorized-title">
+    <div class="site-shell brand-decks__grid">
+      <article class="brand-deck" data-reveal>
+        <h2 id="authorized-title">Distribuidores autorizados</h2>
+        <p>
+          Ingeniería, suministro y respaldo con el mismo equipo. Este es el canal oficial de Tecno
+          All: Siemens, WAGO, Rittal, Carlo Gavazzi, EPLAN, Datalogic y Meltric.
+        </p>
+
+        <ul class="brand-deck__logos">
+          {
+            authorized.map((brand) => (
+              <li>
+                <a
+                  href={brand.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`${brand.name}, abrir sitio oficial`}
+                >
+                  <Image src={brand.logo} alt={brand.name} width={200} />
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </article>
+
+      <article class="brand-deck" data-reveal>
+        <h2>Otras marcas</h2>
+        <p>
+          Entran al proyecto cuando el proceso, el cableado o el equipo que ya hay en planta lo
+          piden.
+        </p>
+
+        <ul class="brand-deck__logos">
+          {
+            additional.map((brand) => (
+              <li>
+                <a
+                  href={brand.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`${brand.name}, abrir sitio oficial`}
+                >
+                  <Image src={brand.logo} alt={brand.name} width={200} />
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </article>
+    </div>
+  </section>
+</SiteLayout>

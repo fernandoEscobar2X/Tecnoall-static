@@ -1,0 +1,40 @@
+---
+import { Image } from 'astro:assets';
+import MobileNav from '@components/site/MobileNav.astro';
+import { homeContent } from '@/content/home';
+import { primaryNavigation } from '@config/navigation';
+
+const currentPath = Astro.url.pathname;
+const isCurrent = (href: string) =>
+  currentPath === href || (href !== '/' && currentPath.startsWith(href));
+---
+
+<header class="site-header" data-site-header data-section="header">
+  <div class="site-header__inner">
+    <a class="site-logo" href="/" aria-label="Tecno All, inicio">
+      <span class="site-logo__dark">
+        <Image src={homeContent.company.logoDark} alt="" width={220} loading="eager" />
+      </span>
+      <span class="site-logo__on-dark">
+        <Image src={homeContent.company.logoOnDark} alt="" width={220} loading="eager" />
+      </span>
+    </a>
+
+    <nav class="site-nav site-header__island" aria-label="Navegación principal">
+      {
+        primaryNavigation.map((item) => (
+          <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="site-header__end">
+      <div class="site-header__actions site-header__island">
+        <button type="button" data-open-quote>Solicitar cotización</button>
+      </div>
+      <MobileNav items={primaryNavigation} />
+    </div>
+  </div>
+</header>

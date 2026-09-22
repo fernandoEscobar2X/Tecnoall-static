@@ -1,0 +1,234 @@
+---
+import { homeContent as c } from '@/content/home';
+import UiIcon from '@components/ui/UiIcon.astro';
+---
+
+<section id="escribanos" class="sedes-contact" aria-labelledby="sedes-contact-title">
+  <div class="sedes-contact__head" data-reveal>
+    <h2 id="sedes-contact-title">Dos sedes en Baja California</h2>
+    <div class="location-switcher" role="tablist" aria-label="Sedes Tecno All">
+      {
+        c.trust.locations.map((location, index) => (
+          <button
+            id={`location-tab-${index}`}
+            type="button"
+            role="tab"
+            data-location-trigger={index}
+            aria-selected={index === 0 ? 'true' : 'false'}
+            aria-controls={`location-panel-${index}`}
+            tabindex={index === 0 ? 0 : -1}
+            class:list={{ 'is-active': index === 0 }}
+          >
+            <strong>{location.city}</strong>
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="sedes-contact__grid" data-location-experience>
+    <div class="sedes-contact__map" data-reveal>
+      <div class="sedes-contact__map-stage">
+        {
+          c.trust.locations.map((location, index) => (
+            <div data-location-map={index} hidden={index !== 0}>
+              <iframe
+                data-map-frame
+                data-map-source={index === 0 ? c.maps.tijuana : c.maps.mexicali}
+                title={`Mapa de Tecno All ${location.city}`}
+                width="100%"
+                height="540"
+                style="border:0"
+                allowfullscreen
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+              />
+            </div>
+          ))
+        }
+      </div>
+      {
+        c.trust.locations.map((location, index) => (
+          <div
+            id={`location-panel-${index}`}
+            class="sedes-contact__sede"
+            role="tabpanel"
+            aria-labelledby={`location-tab-${index}`}
+            data-location-panel={index}
+            hidden={index !== 0}
+          >
+            <div class="sedes-contact__sede-id">
+              <h3>{location.city}</h3>
+              <p>{location.role}</p>
+            </div>
+            <address>{location.address}</address>
+            <div class="sedes-contact__sede-actions">
+              <a href={location.phoneHref}>{location.phone}</a>
+              <a
+                class="sedes-contact__route"
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location.address)}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Abrir indicaciones <UiIcon name="openNewWindow" />
+              </a>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="sedes-contact__card" data-reveal>
+      <h3>Escríbanos</h3>
+      <p>
+        Comparta el requerimiento de su planta. Le respondemos con una propuesta y el siguiente
+        paso.
+      </p>
+
+      <form
+        class="request-form"
+        name="contacto"
+        method="POST"
+        data-netlify="true"
+        data-netlify-honeypot="website"
+        data-contact-form
+        data-whatsapp-href={c.contact.whatsappHref}
+      >
+        <input type="hidden" name="form-name" value="contacto" />
+        <input type="hidden" name="subject" value="Nueva solicitud desde tecnoall.com" />
+        <p hidden>
+          <label
+            >No llenar este campo: <input name="website" autocomplete="off" tabindex="-1" /></label
+          >
+        </p>
+        <div class="request-form__row">
+          <label>
+            <span>Nombre <em aria-hidden="true">*</em></span>
+            <input
+              type="text"
+              name="name"
+              autocomplete="name"
+              placeholder="Nombre completo"
+              required
+            />
+          </label>
+          <label>
+            <span>Empresa</span>
+            <input
+              type="text"
+              name="company"
+              autocomplete="organization"
+              placeholder="Nombre empresa"
+            />
+          </label>
+        </div>
+
+        <div class="request-form__row">
+          <label>
+            <span>Correo <em aria-hidden="true">*</em></span>
+            <input
+              type="email"
+              name="email"
+              autocomplete="email"
+              placeholder="nombre@empresa.com"
+              required
+            />
+          </label>
+          <label>
+            <span>Teléfono</span>
+            <input type="tel" name="phone" autocomplete="tel" placeholder="(664) 000 0000" />
+          </label>
+        </div>
+
+        <label>
+          <span>Tipo de solicitud</span>
+          <select name="requestType">
+            <option>Proyecto de automatización</option>
+            <option>Suministro industrial</option>
+            <option>Servicio o mantenimiento</option>
+            <option>Otro</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Requerimiento <em aria-hidden="true">*</em></span>
+          <textarea
+            name="message"
+            rows="4"
+            placeholder="Describa el proceso, el equipo instalado o los productos que necesita."
+            required></textarea>
+        </label>
+
+        <div class="request-form__actions">
+          <button class="request-form__send" type="submit" name="channel" value="email">
+            Enviar solicitud
+          </button>
+          <button class="request-form__alt" type="submit" name="channel" value="whatsapp">
+            Enviarla por WhatsApp
+          </button>
+        </div>
+        <p class="request-form__status" data-contact-status aria-live="polite"></p>
+      </form>
+
+      <div class="sedes-contact__direct">
+        <a href={c.contact.emailHref}>{c.contact.email}</a>
+        <a href={c.contact.whatsappHref} target="_blank" rel="noreferrer">
+          WhatsApp {c.contact.whatsapp}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initializeLocationExperiences } from '@lib/location-experience';
+
+  initializeLocationExperiences();
+</script>
+
+<script>
+  import { submitNetlifyForm } from '@lib/netlify-forms';
+
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+  const status = form?.querySelector<HTMLElement>('[data-contact-status]');
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const data = new FormData(form);
+    const name = String(data.get('name') ?? '');
+    const company = String(data.get('company') ?? '');
+    const email = String(data.get('email') ?? '');
+    const phone = String(data.get('phone') ?? '');
+    const requestType = String(data.get('requestType') ?? 'Otro');
+    const message = String(data.get('message') ?? '');
+    const submitter = (event as SubmitEvent).submitter as HTMLButtonElement | null;
+    const whatsappHref = form.dataset.whatsappHref ?? '';
+    const body = `${requestType}\n\nNombre: ${name}\nEmpresa: ${company || 'No indicada'}\nCorreo: ${email}\nTeléfono: ${phone || 'No indicado'}\n\nRequerimiento:\n${message}`;
+
+    if (submitter?.value === 'whatsapp' && whatsappHref) {
+      const separator = whatsappHref.includes('?') ? '&' : '?';
+      window.open(
+        `${whatsappHref}${separator}text=${encodeURIComponent(body)}`,
+        '_blank',
+        'noopener',
+      );
+      return;
+    }
+
+    const submitButtons = [...form.querySelectorAll<HTMLButtonElement>('button[type="submit"]')];
+    submitButtons.forEach((button) => (button.disabled = true));
+    if (status) status.textContent = 'Enviando solicitud…';
+    data.set('subject', `${requestType} — ${company || name}`);
+
+    try {
+      await submitNetlifyForm('contacto', data);
+      form.reset();
+      if (status) status.textContent = 'Solicitud recibida. Nos pondremos en contacto.';
+    } catch {
+      if (status) {
+        status.textContent = 'No fue posible enviar. Intente de nuevo o utilice WhatsApp.';
+      }
+    } finally {
+      submitButtons.forEach((button) => (button.disabled = false));
+    }
+  });
+</script>

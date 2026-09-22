@@ -1,0 +1,23 @@
+---
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import Container from '@components/ui/Container.astro';
+---
+
+<SiteLayout
+  seo={{
+    title: 'Página no encontrada',
+    description: 'La página solicitada no existe.',
+    noindex: true,
+  }}
+>
+  <section class="py-28">
+    <Container
+      ><p class="text-sm font-semibold text-muted">404</p><h1
+        class="mt-4 text-5xl font-semibold tracking-tight"
+      >
+        Esta página no existe
+      </h1><a class="mt-8 inline-block font-semibold underline" href="/">Volver al inicio</a
+      ></Container
+    >
+  </section>
+</SiteLayout>

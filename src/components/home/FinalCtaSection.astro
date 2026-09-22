@@ -1,0 +1,30 @@
+---
+import { homeContent as c } from '@/content/home';
+---
+
+<section id="contacto" class="contact-cta" data-section="final-cta" aria-labelledby="contact-title">
+  <div class="site-shell conversion-panel" data-reveal>
+    <div class="conversion-panel__message">
+      <h2 id="contact-title">Ponga su próximo proyecto en marcha</h2>
+    </div>
+    <div class="conversion-panel__actions">
+      <button class="conversion-panel__primary" type="button" data-open-quote>
+        <span>Solicitar cotización</span>
+      </button>
+      <div class="conversion-panel__secondary">
+        <a href="/productos/">
+          <span>Ver líneas de producto</span>
+        </a>
+        <a
+          href={c.contact.whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-whatsapp-entry
+        >
+          <span>Hablar por WhatsApp</span>
+          <i class="conversion-panel__whatsapp" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

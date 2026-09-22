@@ -1,0 +1,131 @@
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('/fonts/ibm-plex-sans-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans Condensed';
+  src: url('/fonts/ibm-plex-condensed-500-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans Condensed';
+  src: url('/fonts/ibm-plex-condensed-600-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans Condensed';
+  src: url('/fonts/ibm-plex-condensed-700-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* Paleta corporativa. No usar hexadecimales sueltos fuera de aquí. */
+@theme {
+  --font-sans: 'IBM Plex Sans', sans-serif;
+  --font-display: 'IBM Plex Sans Condensed', sans-serif;
+
+  /* Azules corporativos */
+  --color-deep: #1b3954;
+  --color-deep-900: #1b3954;
+  --color-deep-800: #1a547a;
+  --color-deep-700: #006892;
+  --color-brand: #006892;
+  --color-brand-bright: #0093d0;
+  --color-accent: #006892;
+  --color-accent-light: #0093d0;
+  --color-whatsapp: #25d366;
+  --color-whatsapp-hover: #1fbd5b;
+
+  /* Neutros: el carbón evita que el sitio se sienta todo azul. */
+  --color-ink: #252525;
+  --color-muted: #5c5c5c;
+  --color-mute-soft: #a8a8a8;
+  --color-line: #a8a8a8;
+  --color-surface: #f4f4f4;
+  --color-paper: #ffffff;
+}
+
+:root {
+  color-scheme: light;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+html {
+  min-height: 100%;
+  scroll-behavior: auto;
+  scroll-padding-top: 76px;
+  background-color: var(--color-paper);
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  min-width: 320px;
+  color: var(--color-ink);
+  background-color: var(--color-paper);
+}
+
+body > main {
+  background-color: var(--color-paper);
+}
+
+h1,
+h2,
+h3 {
+  font-family: 'IBM Plex Sans Condensed', sans-serif;
+  font-synthesis: none;
+}
+
+::selection {
+  color: white;
+  background: var(--color-brand);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+a {
+  text-underline-offset: 0.2em;
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 680px) {
+  html {
+    scroll-padding-top: 72px;
+  }
+}

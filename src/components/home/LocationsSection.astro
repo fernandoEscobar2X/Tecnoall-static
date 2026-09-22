@@ -1,0 +1,123 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { homeContent as c } from '@/content/home';
+import UiIcon from '@components/ui/UiIcon.astro';
+
+interface Props {
+  heading?: string;
+  facades?: ReadonlyArray<ImageMetadata | undefined>;
+}
+
+const { heading = 'Dos sedes, un mismo equipo', facades } = Astro.props;
+const showFacades = Boolean(facades);
+---
+
+<section
+  id="ubicaciones"
+  class:list={['locations', { 'locations--facades': showFacades }]}
+  aria-labelledby="locations-title"
+>
+  <div class="site-shell">
+    <div class="locations__masthead" data-reveal>
+      <header class="section-heading section-heading--locations">
+        <h2 id="locations-title">{heading}</h2>
+      </header>
+
+      <div class="location-switcher" role="tablist" aria-label="Sedes Tecno All">
+        {
+          c.trust.locations.map((location, index) => (
+            <button
+              id={`location-tab-${index}`}
+              type="button"
+              role="tab"
+              data-location-trigger={index}
+              aria-selected={index === 0 ? 'true' : 'false'}
+              aria-controls={`location-panel-${index}`}
+              tabindex={index === 0 ? 0 : -1}
+              class:list={{ 'is-active': index === 0 }}
+            >
+              <strong>{location.city}</strong>
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="location-experience" data-location-experience data-reveal>
+      <div class="location-details">
+        {
+          c.trust.locations.map((location, index) => {
+            const facade = facades?.[index];
+            return (
+              <div
+                id={`location-panel-${index}`}
+                role="tabpanel"
+                aria-labelledby={`location-tab-${index}`}
+                data-location-panel={index}
+                hidden={index !== 0}
+              >
+                {showFacades && (
+                  <figure class="location-details__facade">
+                    {facade ? (
+                      <Image
+                        src={facade}
+                        alt={`Fachada de Tecno All ${location.city}`}
+                        widths={[640, 960, 1280]}
+                        sizes="(min-width: 900px) 34vw, 100vw"
+                      />
+                    ) : (
+                      <span
+                        class="location-details__facade-slot"
+                        aria-label={`Foto de la sucursal ${location.city}, pendiente`}
+                      />
+                    )}
+                  </figure>
+                )}
+                <h3>{location.city}</h3>
+                <p>{location.role}</p>
+                <address>{location.address}</address>
+                <div class="location-details__actions">
+                  <a href={location.phoneHref}>{location.phone}</a>
+                  <a
+                    class="location-details__route"
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location.address)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Abrir indicaciones <UiIcon name="openNewWindow" />
+                  </a>
+                </div>
+              </div>
+            );
+          })
+        }
+      </div>
+      <div class="location-map-stage">
+        {
+          c.trust.locations.map((location, index) => (
+            <div data-location-map={index} hidden={index !== 0}>
+              <iframe
+                data-map-frame
+                data-map-source={index === 0 ? c.maps.tijuana : c.maps.mexicali}
+                title={`Mapa de Tecno All ${location.city}`}
+                width="100%"
+                height="540"
+                style="border:0"
+                allowfullscreen
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+              />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initializeLocationExperiences } from '@lib/location-experience';
+
+  initializeLocationExperiences();
+</script>

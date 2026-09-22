@@ -1,0 +1,28 @@
+---
+import { caseStudies } from '@/content/cases';
+import { absoluteUrl } from '@config/site';
+
+export function getStaticPaths() {
+  return caseStudies.map((caseStudy) => ({
+    params: { slug: caseStudy.slug },
+  }));
+}
+
+const slug = Astro.params.slug;
+const target = `/casos-de-exito/#${slug}`;
+const canonical = absoluteUrl('/casos-de-exito/');
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta http-equiv="refresh" content={`0;url=${target}`} />
+    <link rel="canonical" href={canonical} />
+    <title>Redirigiendo al proyecto</title>
+  </head>
+  <body>
+    <p><a href={target}>Ver el proyecto documentado</a></p>
+  </body>
+</html>

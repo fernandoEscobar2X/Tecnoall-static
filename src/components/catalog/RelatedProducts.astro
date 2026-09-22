@@ -1,0 +1,47 @@
+---
+import { Image } from 'astro:assets';
+import { homeContent } from '@/content/home';
+
+type Product = (typeof homeContent.products)[number];
+
+interface Props {
+  products: readonly Product[];
+}
+
+const { products } = Astro.props;
+---
+
+{
+  products.length > 0 && (
+    <ul class="related-products">
+      {products.map((product) => (
+        <li>
+          <figure>
+            <Image
+              src={product.image}
+              alt={product.imageAlt}
+              widths={[220, 360, 480]}
+              sizes="(min-width: 900px) 22vw, 44vw"
+            />
+          </figure>
+          <div>
+            <p>{product.brand}</p>
+            <h3>{product.title}</h3>
+            <button
+              type="button"
+              data-quote-product={product.id}
+              data-product-title={`${product.brand} — ${product.title}`}
+              aria-pressed="false"
+            >
+              <>
+                <span class="quote-add__idle">Agregar a cotización</span>
+                <span class="quote-add__done">Agregada</span>
+                <i aria-hidden="true">+</i>
+              </>
+            </button>
+          </div>
+        </li>
+      ))}
+    </ul>
+  )
+}

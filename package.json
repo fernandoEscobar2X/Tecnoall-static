@@ -1,0 +1,70 @@
+{
+  "name": "tecnoall-corporate-static",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25",
+    "npm": ">=10 <12"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro preview",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "quality": "npm run format:check && npm run lint && npm run check && npm run build && npm run security:prod",
+    "security:prod": "npm audit --omit=dev --audit-level=high",
+    "security:all": "npm audit --audit-level=high",
+    "security:secrets": "node scripts/check-secrets.mjs"
+  },
+  "dependencies": {
+    "@astrojs/react": "6.0.2",
+    "@astrojs/sitemap": "3.7.3",
+    "@gsap/react": "2.1.2",
+    "@tailwindcss/postcss": "4.3.3",
+    "@tailwindcss/vite": "4.3.3",
+    "astro": "7.3.2",
+    "gsap": "3.15.0",
+    "iconoir": "7.12.1",
+    "qrcode": "1.5.4",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "tailwindcss": "4.3.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "@eslint/js": "9.39.5",
+    "@types/node": "24.x",
+    "@types/qrcode": "1.5.6",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "eslint": "9.39.5",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-astro": "1.7.0",
+    "eslint-plugin-jsx-a11y": "6.10.2",
+    "globals": "17.8.0",
+    "prettier": "3.9.6",
+    "prettier-plugin-astro": "0.14.1",
+    "prettier-plugin-tailwindcss": "0.8.1",
+    "sharp": "0.35.4",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.65.0",
+    "vite": "8.1.5"
+  },
+  "packageManager": "npm@11.19.0",
+  "overrides": {
+    "postcss": "8.5.25",
+    "flatted": "3.4.3",
+    "js-yaml": "4.3.2",
+    "svgo": "4.1.0",
+    "fast-uri": "3.1.7"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

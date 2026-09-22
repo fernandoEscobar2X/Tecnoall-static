@@ -1,0 +1,94 @@
+---
+import CaseBoard from '@components/cases/CaseBoard.astro';
+import PageHero from '@components/pages/PageHero.astro';
+import SampleNotice from '@components/pages/SampleNotice.astro';
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import { caseStudies, getCaseCover, usingSampleCases } from '@/content/cases';
+import { absoluteUrl } from '@config/site';
+import { itemListSchema, pageSchema } from '@lib/seo/schema';
+
+const hasCases = caseStudies.length > 0;
+const heroCover = getCaseCover('planta-desalinizadora');
+const title = 'Proyectos de automatización industrial';
+const description =
+  'Proyectos de automatización documentados con ubicación, alcance y evidencia fotográfica.';
+const canonical = absoluteUrl('/casos-de-exito/');
+const caseItems = caseStudies.map((caseStudy) => ({
+  name: caseStudy.title,
+  description: caseStudy.summary,
+  url: `/casos-de-exito/#${caseStudy.slug}`,
+}));
+---
+
+<SiteLayout
+  seo={{
+    title,
+    description,
+    image: '/og/caso-planta-desalinizadora.png',
+    imageAlt: 'Proyecto de automatización y telemetría para una planta desalinizadora',
+    noindex: !hasCases || usingSampleCases,
+    jsonLd: pageSchema({
+      name: title,
+      description,
+      path: '/casos-de-exito/',
+      image: '/og/caso-planta-desalinizadora.png',
+      type: 'CollectionPage',
+      breadcrumbs: [
+        { name: 'Inicio', path: '/' },
+        { name: 'Casos de éxito', path: '/casos-de-exito/' },
+      ],
+      mainEntityId: `${canonical}#items`,
+      additionalNodes: [itemListSchema('Proyectos documentados', canonical, caseItems)],
+    }),
+  }}
+>
+  <PageHero
+    title="Proyectos industriales documentados"
+    lead="Trabajos con foto y datos verificables: lugar, año y lo que se instaló."
+    image={heroCover}
+    imageAlt="Módulo de desalinización de agua de mar automatizado por Tecno All"
+  >
+    <Fragment slot="actions">
+      <button class="about-hero__brochure" type="button" data-open-quote>
+        Plantear un proyecto
+      </button>
+    </Fragment>
+  </PageHero>
+
+  {usingSampleCases && hasCases && <SampleNotice />}
+
+  {
+    hasCases ? (
+      <section class="page-section" aria-label="Proyectos documentados">
+        <div class="site-shell case-wall">
+          {caseStudies.map((caseStudy, index) => (
+            <CaseBoard caseStudy={caseStudy} index={index} />
+          ))}
+        </div>
+      </section>
+    ) : (
+      <section class="page-section">
+        <div class="site-shell empty-state">
+          <p class="empty-state__label">Contenido en validación</p>
+          <div>
+            <h2>Cada caso se publicará con autorización y evidencia verificable</h2>
+            <p>
+              Solo se muestran proyectos con material aprobado por Tecno All: lugar y fotografías
+              del trabajo.
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="case-close">
+    <div class="site-shell case-close__inner">
+      <p>
+        <strong>¿Un proyecto parecido?</strong>
+        Cuéntenos el proceso y lo que necesita. Respondemos con una propuesta.
+      </p>
+      <button class="brand-button" type="button" data-open-quote>Solicitar cotización</button>
+    </div>
+  </section>
+</SiteLayout>

@@ -1,0 +1,22 @@
+node_modules/
+dist/
+.astro/
+.next/
+.env
+.env.*
+!.env.example
+coverage/
+tmp/
+.DS_Store
+*.log
+tecnoall_regenerados_uniformes/
+
+# Notas internas, no forman parte del repo publicado.
+tecnoall_contenido_web_extraido.md
+AGENTS.md
+docs/design-audit/
+docs/design-direction/
+
+# Paquetes de recursos sin comprimir. El de tecnoall pesa 847 MB: si entra
+# a un commit, el repositorio queda inflado de forma permanente.
+*.zip

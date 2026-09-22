@@ -1,0 +1,15 @@
+---
+import { uiIconUrls, type UiIconName } from '@/lib/ui-icons';
+
+interface Props {
+  name: UiIconName;
+  class?: string;
+}
+
+const { name, class: className } = Astro.props;
+---
+
+<span
+  class:list={['ui-icon', className]}
+  style={`--ui-icon-source: url("${uiIconUrls[name]}")`}
+  aria-hidden="true"></span>

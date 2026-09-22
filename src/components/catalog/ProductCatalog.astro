@@ -1,0 +1,132 @@
+---
+import { Image } from 'astro:assets';
+import { homeContent as c } from '@/content/home';
+
+const filterNames = ['Siemens', 'WAGO', 'Rittal', 'Carlo Gavazzi', 'EPLAN'] as const;
+const filters = [
+  { value: 'Todos', label: 'Ver todo', logo: null },
+  ...filterNames.map((name) => ({
+    value: name,
+    label: name,
+    logo: c.brands.authorized.find((brand) => brand.name === name)?.logo,
+  })),
+] as const;
+---
+
+<div class="product-toolbar" data-reveal>
+  <div class="product-filter-scroll">
+    <div
+      class="product-filter-rail"
+      data-product-filter-rail
+      role="group"
+      aria-label="Filtrar productos por fabricante"
+    >
+      {
+        filters.map((filter, index) => (
+          <button
+            type="button"
+            class:list={[
+              'product-filter',
+              index === 0 && 'product-filter--all',
+              index === 0 && 'is-active',
+            ]}
+            data-product-filter={filter.value}
+            aria-pressed={index === 0 ? 'true' : 'false'}
+            aria-label={filter.value === 'Todos' ? 'Ver todos los productos' : filter.label}
+          >
+            {filter.logo ? (
+              <span class="product-filter__logo" aria-hidden="true">
+                <Image
+                  src={filter.logo}
+                  alt=""
+                  widths={[96, 144, 192]}
+                  sizes="(max-width: 680px) 96px, 120px"
+                />
+              </span>
+            ) : (
+              <span>Ver todo</span>
+            )}
+          </button>
+        ))
+      }
+      <i class="product-filter-indicator" data-product-filter-indicator aria-hidden="true"></i>
+    </div>
+  </div>
+  <p class="visually-hidden" aria-live="polite">
+    <strong data-visible-products>{c.products.length}</strong> productos visibles
+  </p>
+</div>
+
+<div class="product-gallery" data-product-gallery>
+  {
+    c.products.map((product) => (
+      <article data-product data-product-brand={product.brand} data-reveal>
+        <figure>
+          <Image
+            src={product.image}
+            alt={product.imageAlt}
+            widths={[360, 560, 760]}
+            sizes="(min-width: 900px) 31vw, (min-width: 600px) 48vw, 100vw"
+          />
+        </figure>
+        <div class="product-gallery__body">
+          <p>{product.brand}</p>
+          <h3>{product.title}</h3>
+          <p>{product.body}</p>
+          <button
+            type="button"
+            data-quote-product={product.id}
+            data-product-title={`${product.brand} — ${product.title}`}
+            aria-pressed="false"
+          >
+            <>
+              <span class="quote-add__idle">Agregar a cotización</span>
+              <span class="quote-add__done">Agregada</span>
+              <i aria-hidden="true">+</i>
+            </>
+          </button>
+        </div>
+      </article>
+    ))
+  }
+</div>
+
+<script>
+  const rail = document.querySelector<HTMLElement>('[data-product-filter-rail]');
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-product-filter]')];
+  const products = [...document.querySelectorAll<HTMLElement>('[data-product]')];
+  const count = document.querySelector<HTMLElement>('[data-visible-products]');
+  const indicator = document.querySelector<HTMLElement>('[data-product-filter-indicator]');
+  const positionIndicator = (button?: HTMLButtonElement) => {
+    const active = button ?? buttons.find((item) => item.classList.contains('is-active'));
+    if (!rail || !indicator || !active) return;
+    rail.style.setProperty('--filter-indicator-x', `${active.offsetLeft}px`);
+    rail.style.setProperty('--filter-indicator-width', `${active.offsetWidth}px`);
+  };
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const filter = button.dataset.productFilter ?? 'Todos';
+      buttons.forEach((item) => {
+        const active = item === button;
+        item.classList.toggle('is-active', active);
+        item.setAttribute('aria-pressed', String(active));
+      });
+      let visible = 0;
+      products.forEach((product) => {
+        const matches = filter === 'Todos' || product.dataset.productBrand === filter;
+        product.classList.remove('is-filtering-in');
+        product.hidden = !matches;
+        if (matches) {
+          visible += 1;
+          void product.offsetWidth;
+          product.classList.add('is-filtering-in');
+        }
+      });
+      if (count) count.textContent = String(visible);
+      positionIndicator(button);
+    });
+  });
+  requestAnimationFrame(() => positionIndicator());
+  document.fonts?.ready.then(() => positionIndicator());
+  window.addEventListener('resize', () => positionIndicator(), { passive: true });
+</script>

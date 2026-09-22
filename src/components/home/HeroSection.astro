@@ -1,0 +1,95 @@
+---
+import { getImage } from 'astro:assets';
+import { homeContent as c } from '@/content/home';
+
+const hero = c.hero;
+const mobileWidths = [480, 640] as const;
+const desktopWidths = [720, 1080, 1448] as const;
+
+const createSet = async (
+  widths: readonly number[],
+  format: 'avif' | 'webp',
+  quality: number,
+  square = false,
+) =>
+  Promise.all(
+    widths.map((width) =>
+      getImage({
+        src: hero.art,
+        width,
+        ...(square ? { height: width, fit: 'cover' as const, position: 'center' } : {}),
+        format,
+        quality,
+      }),
+    ),
+  );
+
+const [mobileAvif, mobileWebp, desktopAvif, desktopWebp] = await Promise.all([
+  createSet(mobileWidths, 'avif', 82, true),
+  createSet(mobileWidths, 'webp', 85, true),
+  createSet(desktopWidths, 'avif', 90),
+  createSet(desktopWidths, 'webp', 90),
+]);
+const srcSet = (variants: Awaited<ReturnType<typeof createSet>>, widths: readonly number[]) =>
+  variants.map((variant, index) => `${variant.src} ${widths[index]}w`).join(', ');
+const fallback = desktopWebp.at(-1);
+if (!fallback) throw new Error('No se pudo preparar la imagen principal');
+---
+
+<section class="hero-light" data-section="hero" aria-labelledby="hero-title">
+  <div class="hero-light__grid">
+    <div class="hero-light__copy">
+      <h1 id="hero-title">
+        <span class="hero-light__title-desktop">{hero.title}</span>
+        <span class="hero-light__title-mobile">
+          <span>{hero.mobileTitle.primary}</span>
+          <span>{hero.mobileTitle.accent}</span>
+        </span>
+      </h1>
+      <p class="hero-light__lead">
+        <span class="hero-light__lead-desktop">{hero.lead}</span>
+        <span class="hero-light__lead-mobile">{hero.mobileLead}</span>
+      </p>
+
+      <div class="hero-light__actions">
+        <a class="brand-button hero-action" href="/soluciones/">
+          <span>Ver servicios</span>
+        </a>
+        <button class="brand-button brand-button--ghost hero-action" type="button" data-open-quote>
+          <span>Hablar con un asesor</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <figure class="hero-light__art">
+    <picture>
+      <source
+        media="(max-width: 900px) and (orientation: portrait)"
+        srcset={srcSet(mobileAvif, mobileWidths)}
+        sizes="100vw"
+        type="image/avif"
+      />
+      <source
+        media="(max-width: 900px) and (orientation: portrait)"
+        srcset={srcSet(mobileWebp, mobileWidths)}
+        sizes="100vw"
+        type="image/webp"
+      />
+      <source srcset={srcSet(desktopAvif, desktopWidths)} sizes="100vw" type="image/avif" />
+      <source srcset={srcSet(desktopWebp, desktopWidths)} sizes="100vw" type="image/webp" />
+      <img
+        src={fallback.src}
+        srcset={srcSet(desktopWebp, desktopWidths)}
+        sizes="100vw"
+        alt={hero.artAlt}
+        width={hero.art.width}
+        height={hero.art.height}
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+      />
+    </picture>
+  </figure>
+  <div class="hero-light__veil" aria-hidden="true"></div>
+</section>

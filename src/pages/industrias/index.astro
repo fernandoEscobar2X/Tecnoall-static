@@ -1,0 +1,104 @@
+---
+import { Image } from 'astro:assets';
+import CtaBand from '@components/pages/CtaBand.astro';
+import PageHero from '@components/pages/PageHero.astro';
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import { homeContent } from '@/content/home';
+import { industrySlugs } from '@/content/routes';
+
+/** Cada sector con su plano visual. Se arma como tuplas para no indexar a ciegas. */
+const planes = homeContent.industries.map((industry, index) => ({
+  industry,
+  slug: industrySlugs[industry.id],
+  media: index === 0 ? homeContent.solutions[0] : homeContent.solutions[4],
+}));
+---
+
+<SiteLayout
+  seo={{
+    title: 'Procesos y manufactura',
+    noindex: true,
+    description:
+      'Automatización, control y digitalización para procesos productivos y manufactura.',
+  }}
+>
+  <PageHero
+    title="Del proceso productivo a la planta conectada"
+    lead="Control y datos para procesos y manufactura que ya están en producción."
+    image={homeContent.solutions[3].image}
+    imageAlt={homeContent.solutions[3].imageAlt}
+  >
+    <Fragment slot="actions">
+      <button class="about-hero__brochure" type="button" data-open-quote>
+        Plantear un requerimiento
+      </button>
+    </Fragment>
+  </PageHero>
+
+  <section class="markets" aria-labelledby="industries-title">
+    <div class="market-composition">
+      <header class="market-composition__intro" data-reveal>
+        <h2 id="industries-title">Procesos y manufactura</h2>
+      </header>
+      {
+        planes.map(({ industry, slug, media }, index) => (
+          <a
+            class:list={['market-plane', `market-plane--${index + 1}`]}
+            href={`/industrias/${slug}/`}
+            data-reveal
+          >
+            <Image
+              src={media.image}
+              alt={media.imageAlt}
+              widths={[720, 1080, 1600]}
+              sizes={
+                index === 0 ? '(min-width: 900px) 62vw, 100vw' : '(min-width: 900px) 44vw, 100vw'
+              }
+            />
+            <div>
+              <span>{String(index + 1).padStart(2, '0')} · Sector</span>
+              <h3>{industry.title}</h3>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="page-section page-section--tint" aria-labelledby="applications-title">
+    <div class="site-shell">
+      <header class="section-heading" data-reveal>
+        <h2 id="applications-title">Qué se atiende en cada sector</h2>
+        <p>
+          Una planta sin instrumentar no se aborda igual que una que ya genera datos. Le decimos qué
+          aplica en su caso.
+        </p>
+      </header>
+
+      <div class="statement-grid" data-reveal style="grid-template-columns:repeat(2,minmax(0,1fr))">
+        {
+          planes.map(({ industry, slug }) => (
+            <div>
+              <dt>{industry.title}</dt>
+              <dd style="margin-top:14px">{industry.body}</dd>
+              <ul class="spec-list" style="margin-top:26px">
+                {industry.applications.map((application) => (
+                  <li>{application}</li>
+                ))}
+              </ul>
+              <a class="feature-row__link" href={`/industrias/${slug}/`} style="margin-top:26px">
+                Ver aplicaciones
+              </a>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    tone="accent"
+    title="Cuéntenos qué proceso necesita automatizar"
+    body="Describa la planta y lo que espera lograr. Le respondemos con una propuesta y el siguiente paso."
+  />
+</SiteLayout>

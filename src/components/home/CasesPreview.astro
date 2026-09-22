@@ -1,0 +1,38 @@
+---
+import HomeCase from '@components/islands/HomeCase';
+import { caseStudies } from '@/content/cases';
+import { createResponsiveMedia } from '@lib/responsive-media';
+
+const featured = caseStudies[0];
+const phrase = featured?.homePhrase;
+const shot = featured
+  ? await createResponsiveMedia({
+      src: featured.image,
+      widths: [480, 720, 960, 1280, 1920],
+      sizes: '100vw',
+      alt: featured.imageAlt,
+      quality: 90,
+    })
+  : undefined;
+---
+
+{
+  featured && phrase && shot && (
+    <HomeCase
+      client:visible={{ rootMargin: '700px' }}
+      imageSrc={shot.src}
+      imageSrcSet={shot.srcSet}
+      imageSizes={shot.sizes}
+      imageWidth={shot.width}
+      imageHeight={shot.height}
+      imageAlt={shot.alt}
+      voice={`${featured.year}, ${featured.location}`}
+      openLine={phrase.open}
+      closeLine={phrase.close}
+      statValue={phrase.statValue}
+      statUnit={phrase.statUnit}
+      statLabel={phrase.statLabel}
+      href={`/casos-de-exito/#${featured.slug}`}
+    />
+  )
+}

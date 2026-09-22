@@ -1,0 +1,94 @@
+---
+import { Image } from 'astro:assets';
+import SedesContact from '@components/about/SedesContact.astro';
+import PageHero from '@components/pages/PageHero.astro';
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import { homeContent as c } from '@/content/home';
+import { pageSchema } from '@lib/seo/schema';
+import heroHmi from '@assets/tecnoall/empresa/hero-hmi-16x9.png';
+import mexicaliFacade from '@assets/tecnoall/empresa/mexicali-fachada.webp';
+import tijuanaFacade from '@assets/tecnoall/empresa/tijuana-fachada.webp';
+
+const brandCount = c.brands.authorized.length + c.brands.additional.length;
+const tijuana = c.trust.locations[0];
+const mexicali = c.trust.locations[1];
+const title = 'Tecno All en Tijuana y Mexicali';
+const description = c.company.description;
+---
+
+<SiteLayout
+  seo={{
+    title,
+    description,
+    image: '/og/corporativo.png',
+    imageAlt: 'Ingeniería y automatización industrial de Tecno All',
+    jsonLd: pageSchema({
+      name: title,
+      description,
+      path: '/empresa/',
+      image: '/og/corporativo.png',
+      type: 'AboutPage',
+      includeLocations: true,
+      breadcrumbs: [
+        { name: 'Inicio', path: '/' },
+        { name: 'Sobre nosotros', path: '/empresa/' },
+      ],
+    }),
+  }}
+>
+  <PageHero
+    title={c.trust.title}
+    lead={c.trust.statements[0]}
+    image={heroHmi}
+    imageAlt="Tablero de control con pantalla HMI fabricado por Tecno All"
+  >
+    <Fragment slot="actions">
+      <a
+        class="about-hero__brochure"
+        href={c.company.brochureUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Descargar brochure corporativo
+      </a>
+    </Fragment>
+  </PageHero>
+
+  <section class="about-place" aria-label="Sedes Tecno All">
+    <div class="about-place__grid" data-reveal>
+      <figure class="about-place__figure">
+        <Image
+          src={tijuanaFacade}
+          alt="Fachada de la sucursal matriz Tecno All en Tijuana"
+          widths={[640, 960, 1280]}
+          sizes="(min-width: 1360px) 596px, calc(100vw - 48px)"
+          quality={90}
+          format="webp"
+        />
+        <figcaption>Sucursal matriz {tijuana.city} — {tijuana.address}</figcaption>
+      </figure>
+      <figure class="about-place__figure">
+        <Image
+          src={mexicaliFacade}
+          alt="Fachada de la sucursal Tecno All en Mexicali"
+          widths={[640, 960, 1280]}
+          sizes="(min-width: 1360px) 596px, calc(100vw - 48px)"
+          quality={90}
+          format="webp"
+        />
+        <figcaption>Sucursal {mexicali.city} — {mexicali.address}</figcaption>
+      </figure>
+    </div>
+
+    <p class="about-place__proof" data-reveal>
+      <span>
+        Rittal nos lista entre sus distribuidores autorizados en Baja California — el catálogo cubre {
+          brandCount
+        } marcas industriales.
+      </span>
+      <a href="/marcas/">Ver fabricantes que representamos</a>
+    </p>
+  </section>
+
+  <SedesContact />
+</SiteLayout>

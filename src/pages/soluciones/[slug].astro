@@ -1,0 +1,158 @@
+---
+import CtaBand from '@components/pages/CtaBand.astro';
+import PageHero from '@components/pages/PageHero.astro';
+import RelatedProducts from '@components/catalog/RelatedProducts.astro';
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import { solutionPages, type SolutionPage } from '@/content/routes';
+import { caseStudies } from '@/content/cases';
+import { productsForSolution } from '@/content/graph';
+import { siteConfig } from '@config/site';
+import { pageSchema, serviceSchema } from '@lib/seo/schema';
+
+export function getStaticPaths() {
+  // tableros-de-control tiene su propia página en tableros-de-control.astro;
+  // se excluye aquí para que no compitan dos rutas por la misma URL.
+  const pilotSlugs = new Set(['tableros-de-control']);
+
+  return solutionPages
+    .filter((solution) => !pilotSlugs.has(solution.slug))
+    .map((solution) => ({
+      params: { slug: solution.slug },
+      props: { solution },
+    }));
+}
+
+interface Props {
+  solution: SolutionPage;
+}
+const { solution } = Astro.props;
+const canonical = `${siteConfig.siteUrl}/soluciones/${solution.slug}/`;
+
+const products = productsForSolution(solution.id);
+const projects = caseStudies.filter((caseStudy) => caseStudy.solutionIds.includes(solution.id));
+const related = solutionPages.filter((item) => item.id !== solution.id);
+---
+
+<SiteLayout
+  seo={{
+    title: solution.title,
+    description: solution.body,
+    image: '/og/soluciones.png',
+    imageAlt: 'Supervisión de un proceso industrial mediante PLC y SCADA',
+    jsonLd: pageSchema({
+      name: solution.title,
+      description: solution.body,
+      path: `/soluciones/${solution.slug}/`,
+      image: '/og/soluciones.png',
+      breadcrumbs: [
+        { name: 'Inicio', path: '/' },
+        { name: 'Soluciones', path: '/soluciones/' },
+        { name: solution.title, path: `/soluciones/${solution.slug}/` },
+      ],
+      mainEntityId: `${canonical}#service`,
+      additionalNodes: [
+        serviceSchema({ name: solution.title, description: solution.body, url: canonical }),
+      ],
+    }),
+  }}
+>
+  <PageHero
+    title={solution.title}
+    lead={solution.body}
+    image={solution.image}
+    imageAlt={solution.imageAlt}
+  >
+    <Fragment slot="actions">
+      <button class="about-hero__brochure" type="button" data-open-quote>
+        Consultar esta solución
+      </button>
+    </Fragment>
+  </PageHero>
+
+  <section class="page-section page-section--tight" aria-labelledby="scope-title">
+    <div class="site-shell">
+      <header class="section-heading">
+        <h2 id="scope-title">Alcance de trabajo</h2>
+        <p>
+          Ingeniería, suministro e integración en el mismo equipo: el proyecto no cambia de manos
+          entre el diseño, la compra y la puesta en marcha.
+        </p>
+      </header>
+
+      <ul class="spec-list">
+        {solution.tags.map((tag) => <li>{tag}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  {
+    products.length > 0 && (
+      <section class="page-section page-section--tint" aria-labelledby="technology-title">
+        <div class="site-shell">
+          <header class="section-heading section-heading--products">
+            <div>
+              <h2 id="technology-title">Tecnología que interviene</h2>
+            </div>
+            <a href="/productos/">Ver catálogo completo</a>
+          </header>
+
+          <RelatedProducts products={products} />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    projects.length > 0 && (
+      <section class="page-section" aria-labelledby="projects-title">
+        <div class="site-shell">
+          <header class="section-heading">
+            <h2 id="projects-title">Proyectos con esta solución</h2>
+            <p>Trabajo documentado con esta solución.</p>
+          </header>
+
+          <ul class="spec-list">
+            {projects.map((project) => (
+              <li>
+                <a
+                  class="feature-row__link"
+                  href={`/casos-de-exito/#${project.slug}`}
+                  style="margin:0"
+                >
+                  {project.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="page-section page-section--paper" aria-labelledby="related-title">
+    <div class="site-shell">
+      <header class="section-heading">
+        <h2 id="related-title">Otras soluciones</h2>
+        <p>Se combinan según el estado de la planta y lo que necesita lograr.</p>
+      </header>
+
+      <ul class="spec-list">
+        {
+          related.map((item) => (
+            <li>
+              <a class="feature-row__link" href={`/soluciones/${item.slug}/`} style="margin:0">
+                {item.title}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand
+    tone="accent"
+    title="¿Esta solución aplica a su planta?"
+    body="Cuéntenos el proceso. Armamos ingeniería, suministro y arranque con el mismo equipo."
+  />
+</SiteLayout>

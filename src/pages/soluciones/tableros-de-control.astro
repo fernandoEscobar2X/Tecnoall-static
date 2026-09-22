@@ -1,0 +1,344 @@
+---
+import { Image } from 'astro:assets';
+import PageHero from '@components/pages/PageHero.astro';
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import { solutionPages } from '@/content/routes';
+import { siteConfig } from '@config/site';
+import { pageSchema, serviceSchema } from '@lib/seo/schema';
+import { getCaseStageImage } from '@/content/cases';
+
+const tallerTablero = getCaseStageImage('linea-lentes-carl-zeiss', 'stage-control-panel');
+const renderInterior = getCaseStageImage('tableros-pbar4-mexicali', 'stage-render-interior');
+const tableroCcm = getCaseStageImage('tableros-pbar4-mexicali', 'stage-fabricated-panel');
+const panelesInstalados = getCaseStageImage('planta-desalinizadora', 'stage-control-panels');
+
+import rittalLogo from '@assets/tecnoall/logos-transparent/logo-rittal.png';
+import wagoLogo from '@assets/tecnoall/logos-transparent/logo-wago.png';
+import eplanLogo from '@assets/tecnoall/logos-transparent/logo-eplan2.png';
+import siemensLogo from '@assets/tecnoall/logos-transparent/logo-siemens.png';
+import carloLogo from '@assets/tecnoall/logos-transparent/logo-carlo.png';
+
+const solution = solutionPages.find((item) => item.id === 'solution-panels')!;
+const canonical = `${siteConfig.siteUrl}/soluciones/${solution.slug}/`;
+
+const techEcosystem = [
+  { name: 'Rittal', role: 'Envolventes industriales y climatización', logo: rittalLogo },
+  { name: 'WAGO', role: 'Bornaje de conexión y módulos de interfaz', logo: wagoLogo },
+  { name: 'EPLAN', role: 'Ingeniería eléctrica y gemelo digital 3D', logo: eplanLogo },
+  { name: 'Siemens', role: 'Controladores SIMATIC S7, HMI y variadores', logo: siemensLogo },
+  { name: 'Carlo Gavazzi', role: 'Sensores, monitoreo y relés de estado sólido', logo: carloLogo },
+];
+
+const scopeLeft = [
+  {
+    title: 'Ingeniería eléctrica y documentación',
+    desc: 'Desarrollo de diagramas unifilares, esquemas de control y listas de materiales en EPLAN.',
+  },
+  {
+    title: 'Diseño de envolvente y cálculo térmico',
+    desc: 'Selección de gabinetes Rittal NEMA/IEC, placas de montaje y dimensionamiento de climatización.',
+  },
+  {
+    title: 'Selección e integración de hardware',
+    desc: 'Especificación de protecciones, contactores, fuentes, PLC y módulos de comunicación.',
+  },
+];
+
+const scopeRight = [
+  {
+    title: 'Montaje mecánico y canalización',
+    desc: 'Troquelado de envolventes, fijación de rieles DIN y canaletas ranuradas de alta densidad.',
+  },
+  {
+    title: 'Alambrado de potencia y control',
+    desc: 'Conexionado con bornas WAGO TOPJOB® S y ferrulado identificado por número de señal.',
+  },
+  {
+    title: 'Pruebas FAT y puesta en marcha',
+    desc: 'Verificación punto a punto, simulación de I/O, pruebas de aislamiento y entrega as-built.',
+  },
+];
+
+const processSteps = [
+  {
+    phase: 'Ingeniería eléctrica',
+    summary:
+      'Levantamiento de requerimientos en sitio, diseño de planos en EPLAN Pro Panel y validación de arquitectura con el cliente.',
+  },
+  {
+    phase: 'Fabricación y ensamble',
+    summary:
+      'Mecanizado de envolventes, distribución en placa de montaje, fijación de rielería y colocación de componentes.',
+  },
+  {
+    phase: 'Alambrado e integración',
+    summary:
+      'Cableado de fuerza y control, ferrulado normativo, integración de controladores Siemens y pruebas de continuidad punto a punto.',
+  },
+  {
+    phase: 'Entrega y puesta en marcha',
+    summary:
+      'Protocolo de pruebas FAT en taller, transporte, energización en planta y acompañamiento técnico durante el arranque.',
+  },
+];
+---
+
+<SiteLayout
+  seo={{
+    title: solution.title,
+    description: solution.body,
+    image: '/og/soluciones.png',
+    imageAlt: 'Supervisión de un proceso industrial mediante PLC y SCADA',
+    jsonLd: pageSchema({
+      name: solution.title,
+      description: solution.body,
+      path: `/soluciones/${solution.slug}/`,
+      image: '/og/soluciones.png',
+      breadcrumbs: [
+        { name: 'Inicio', path: '/' },
+        { name: 'Soluciones', path: '/soluciones/' },
+        { name: solution.title, path: `/soluciones/${solution.slug}/` },
+      ],
+      mainEntityId: `${canonical}#service`,
+      additionalNodes: [
+        serviceSchema({ name: solution.title, description: solution.body, url: canonical }),
+      ],
+    }),
+  }}
+>
+  <PageHero
+    title="Diseño y fabricación de tableros de control"
+    lead="Diseñamos, integramos y fabricamos tableros de control y distribución bajo normas NEMA e IEC. Realizamos ingeniería eléctrica en EPLAN, ensamble en taller propio en Tijuana y puesta en marcha en sitio."
+    image={tallerTablero}
+    imageAlt="Fabricación y alambrado de tableros de control en taller de Tecno All"
+  >
+    <Fragment slot="actions">
+      <button class="about-hero__brochure" type="button" data-open-quote>
+        Consultar un proyecto
+      </button>
+    </Fragment>
+  </PageHero>
+
+  <article class="tab-page">
+    {/* ── TRANSICIÓN DEL FIRST VIEWPORT: FRASE PUENTE ── */}
+    <section class="tab-bridge" aria-label="Introducción al proceso">
+      <div class="site-shell">
+        <p class="tab-bridge__text">De la ingeniería eléctrica al tablero terminado.</p>
+      </div>
+    </section>
+
+    {/* ── MOVIMIENTO 2: VER EL TRABAJO (Evidencia fotográfica) ── */}
+    <section class="tab-work" aria-labelledby="work-title">
+      <div class="site-shell">
+        <div class="tab-work__intro">
+          <h2 id="work-title" class="tab-work__title">Fabricación de tableros en taller propio</h2>
+          <p class="tab-work__text">
+            Integramos gabinetes de control para procesos continuos y manufactura. Cada celda se
+            arma con canalización estructurada, borneras identificadas y cableado de potencia
+            separado de señales de control.
+          </p>
+        </div>
+
+        <div class="tab-work__gallery">
+          <figure class="tab-work__figure tab-work__figure--main">
+            <Image
+              src={renderInterior}
+              alt="Estructura interna y barras de distribución de tablero de control"
+              class="tab-work__img"
+              widths={[900, 1300, 1800]}
+              sizes="(max-width: 900px) 100vw, 68vw"
+            />
+            <figcaption class="tab-work__caption">
+              Distribución interna de barras de potencia y canalización de control
+            </figcaption>
+          </figure>
+
+          <figure class="tab-work__figure tab-work__figure--sub">
+            <Image
+              src={tableroCcm}
+              alt="Centro de control de motores CCM terminado por Tecno All"
+              class="tab-work__img"
+              widths={[600, 900, 1200]}
+              sizes="(max-width: 900px) 100vw, 42vw"
+            />
+            <figcaption class="tab-work__caption">
+              Centro de control de motores CCM fabricado y rotulado bajo norma NEMA
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    {/* ── MOVIMIENTO 3: QUÉ INCLUYE (Alcance estructurado en 2 columnas) ── */}
+    <section class="tab-scope" aria-labelledby="scope-title">
+      <div class="site-shell">
+        <header class="tab-scope__header">
+          <h2 id="scope-title" class="tab-scope__title">Alcance</h2>
+          <p class="tab-scope__subtitle">
+            El servicio cubre desde el diseño de ingeniería eléctrica hasta la entrega física y
+            pruebas en planta.
+          </p>
+        </header>
+
+        <div class="tab-scope__grid">
+          <div class="tab-scope__col">
+            {
+              scopeLeft.map((item) => (
+                <div class="tab-scope__item">
+                  <h3 class="tab-scope__item-title">{item.title}</h3>
+                  <p class="tab-scope__item-desc">{item.desc}</p>
+                </div>
+              ))
+            }
+          </div>
+
+          <div class="tab-scope__col">
+            {
+              scopeRight.map((item) => (
+                <div class="tab-scope__item">
+                  <h3 class="tab-scope__item-title">{item.title}</h3>
+                  <p class="tab-scope__item-desc">{item.desc}</p>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* ── MOVIMIENTO 4: ECOSISTEMA TECNOLÓGICO ── */}
+    <section class="tab-eco" aria-labelledby="eco-title">
+      <div class="site-shell">
+        <h2 id="eco-title" class="tab-eco__title">Ecosistema de componentes</h2>
+        <p class="tab-eco__subtitle">
+          Ensamblamos con marcas líderes en la industria para garantizar durabilidad, certificación
+          y refaccionamiento.
+        </p>
+
+        <div class="tab-eco__list">
+          {
+            techEcosystem.map((brand) => (
+              <div class="tab-eco__row">
+                <div class="tab-eco__brand-box">
+                  <Image src={brand.logo} alt={brand.name} class="tab-eco__logo" width={140} />
+                </div>
+                <div class="tab-eco__desc">
+                  <strong>{brand.name}</strong> — {brand.role}
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    {/* ── MOVIMIENTO 5: PROCESO DE INGENIERÍA Y FABRICACIÓN ── */}
+    <section class="tab-process" aria-labelledby="proc-title">
+      <div class="site-shell">
+        <h2 id="proc-title" class="tab-process__title">De la ingeniería al arranque</h2>
+
+        <div class="tab-process__flow">
+          {
+            processSteps.map((step, idx) => (
+              <div class="tab-process__step">
+                <span class="tab-process__num">{String(idx + 1).padStart(2, '0')}</span>
+                <h3 class="tab-process__phase">{step.phase}</h3>
+                <p class="tab-process__summary">{step.summary}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    {/* ── MOVIMIENTO 6: INSTALADO EN PLANTA (Pausa fotográfica) ── */}
+    <section class="tab-installed" aria-labelledby="inst-title">
+      <div class="site-shell">
+        <figure class="tab-installed__figure">
+          <Image
+            src={panelesInstalados}
+            alt="Fila de tableros de control instalados y operando en planta"
+            class="tab-installed__img"
+            widths={[900, 1400, 2000]}
+            sizes="(max-width: 900px) 100vw, 100vw"
+          />
+          <figcaption class="tab-installed__caption">
+            Sistemas de control operando en sitio en plantas de proceso y manufactura.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    {/* ── MOVIMIENTO 7: PROYECTO RELACIONADO ── */}
+    <section class="tab-case-ref" aria-labelledby="case-ref-title">
+      <div class="site-shell tab-case-ref__inner">
+        <div class="tab-case-ref__copy">
+          <span class="tab-case-ref__tag">Proyecto en operación</span>
+          <h2 id="case-ref-title" class="tab-case-ref__title">
+            Tableros de control y fuerza para infraestructura de bombeo
+          </h2>
+          <p class="tab-case-ref__desc">
+            Fabricación de tableros de distribución, arrancadores y automatización con PLC Siemens
+            para plantas de tratamiento y bombeo en Baja California.
+          </p>
+          <a href="/casos-de-exito/#tableros-pbar4-mexicali" class="tab-case-ref__link">
+            <span>Ver casos de éxito</span>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    {/* ── MOVIMIENTO 8: CIERRE EDITORIAL ── */}
+    <section class="tab-close" aria-labelledby="tab-close-title">
+      <div class="site-shell tab-close__inner">
+        <div class="tab-close__left">
+          <h2 id="tab-close-title" class="tab-close__title">
+            ¿Tiene un tablero por diseñar, actualizar o integrar?
+          </h2>
+          <p class="tab-close__desc">
+            Envíenos sus diagramas unifilares o especificaciones de proceso para cotizar el
+            desarrollo integral de su tablero.
+          </p>
+        </div>
+
+        <div class="tab-close__right">
+          <button class="tab-btn-primary" type="button" data-open-quote>
+            <span>Consultar proyecto</span>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </button>
+          <div class="tab-close__contacts">
+            <span>Tel: +52 (664) 682 1244</span>
+            <span>ventas@tecnoall.com</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </article>
+</SiteLayout>

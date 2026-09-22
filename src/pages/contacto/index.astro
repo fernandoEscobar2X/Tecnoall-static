@@ -1,0 +1,91 @@
+---
+import LocationExperience from '@components/locations/LocationExperience.astro';
+import PageHero from '@components/pages/PageHero.astro';
+import UiIcon from '@components/ui/UiIcon.astro';
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import { homeContent as c } from '@/content/home';
+import { getCaseCover } from '@/content/cases';
+
+const projectCover = getCaseCover('cosechadora-exportadora-sal');
+---
+
+<SiteLayout
+  seo={{
+    title: 'Contacto',
+    noindex: true,
+    description:
+      'Contacta al equipo de Tecno All en Tijuana o Mexicali para hablar de automatización, control y suministro industrial.',
+  }}
+>
+  <PageHero
+    title={c.finalCta.title}
+    lead={c.finalCta.body}
+    image={projectCover}
+    imageAlt="Proyecto de automatización desarrollado por Tecno All"
+    compact
+  >
+    <Fragment slot="actions">
+      <button class="about-hero__brochure" type="button" data-open-quote>
+        Solicitar cotización
+      </button>
+      <a class="about-hero__brochure" href={c.contact.phoneHref}>Llamar ahora</a>
+    </Fragment>
+  </PageHero>
+
+  <section class="contact-cta" aria-labelledby="routes-title">
+    <div class="site-shell conversion-panel" data-reveal>
+      <div class="conversion-panel__message">
+        <h2 id="routes-title">¿Por dónde quiere empezar?</h2>
+        <p>
+          Elija la vía que corresponda a su requerimiento. Las tres llegan al mismo equipo de
+          ingeniería.
+        </p>
+      </div>
+      <div class="conversion-panel__routes">
+        <button class="conversion-panel__route--text-only" type="button" data-open-quote>
+          <div>
+            <strong>Proyecto de automatización</strong><p>Describa el proceso, equipo o alcance</p>
+          </div>
+        </button>
+        <a href="/productos/">
+          <div>
+            <strong>Suministro industrial</strong><p>
+              Comparta los productos o fabricantes requeridos
+            </p>
+          </div>
+        </a>
+        <a href={c.contact.emailHref}>
+          <div><strong>Correo directo</strong><p>{c.contact.email}</p></div>
+          <UiIcon name="mail" />
+        </a>
+        <a
+          href={c.contact.whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-whatsapp-entry
+        >
+          <div><strong>Contacto inmediato</strong><p>WhatsApp {c.contact.whatsapp}</p></div>
+          <svg viewBox="-1 -1 26 26" aria-hidden="true">
+            <path
+              d="M20.5 3.5A11.8 11.8 0 0 0 1.9 17.7L.3 23.6l6-1.6A11.8 11.8 0 0 0 20.5 3.5Zm-8.3 18.1c-1.8 0-3.6-.5-5.1-1.4l-.4-.2-3.5.9.9-3.4-.2-.4A9.6 9.6 0 1 1 12.2 21.6Zm5.3-7.2c-.3-.1-1.7-.8-1.9-.9-.3-.1-.5-.1-.7.2l-.9 1.1c-.2.2-.3.2-.6.1-1.7-.8-2.8-1.5-3.9-3.4-.3-.5.3-.5.8-1.6.1-.2 0-.4 0-.6l-.9-2.1c-.2-.6-.5-.5-.7-.5H8c-.2 0-.6.1-.9.4-.3.4-1.2 1.2-1.2 2.9s1.2 3.3 1.4 3.5c.2.2 2.4 3.7 5.9 5.2.8.4 1.5.6 2 .7.8.3 1.6.2 2.2.1.7-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4Z"
+            ></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section" aria-labelledby="contact-locations-title">
+    <div class="site-shell">
+      <header class="section-heading section-heading--locations" data-reveal>
+        <h2 id="contact-locations-title">Dos puntos de atención en Baja California</h2>
+        <p>
+          Consulte disponibilidad, soporte de ingeniería o el alcance de su próximo proyecto
+          directamente con la sede que le corresponde.
+        </p>
+      </header>
+
+      <LocationExperience />
+    </div>
+  </section>
+</SiteLayout>

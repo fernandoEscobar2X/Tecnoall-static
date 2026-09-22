@@ -1,0 +1,118 @@
+---
+import UiIcon from '@components/ui/UiIcon.astro';
+import { homeContent as c } from '@/content/home';
+
+const year = new Date().getFullYear();
+
+const solutionLinks = [
+  { label: 'Soluciones', href: '/soluciones/' },
+  { label: 'Casos de éxito', href: '/casos-de-exito/' },
+];
+
+const companyLinks = [
+  { label: 'Marcas', href: '/marcas/' },
+  { label: 'Productos', href: '/productos/' },
+  { label: 'Sobre nosotros', href: '/empresa/' },
+];
+---
+
+<footer class="site-footer" data-section="footer">
+  <div class="site-shell site-footer__grid">
+    <div class="site-footer__identity">
+      <div class="site-footer__brand-row">
+        <a href="/" aria-label="Tecno All, inicio">
+          <img src={c.company.logo.src} alt="Tecno All" width="220" height="60" />
+        </a>
+
+        <div class="site-footer__social" aria-label="Redes sociales">
+          <a
+            class="site-footer__icon"
+            href={c.social[0].href}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Tecno All en Facebook"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M14 8h3V4.5c-.5-.1-2.2-.2-4.1-.2-4 0-6.7 2.4-6.7 6.9V15H2v4h4.2v10h5.1V19h4.3l.7-4h-5v-3.4C11.3 10.4 11.6 8 14 8Z"
+                transform="scale(.75)"></path>
+            </svg>
+          </a>
+          <a
+            class="site-footer__icon"
+            href={c.social[1].href}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Tecno All en LinkedIn"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M5.3 7.7A2.7 2.7 0 1 0 5.3 2a2.7 2.7 0 0 0 0 5.7ZM3 21h4.6V9H3v12Zm7.4 0H15v-6.7c0-1.8.3-3.5 2.5-3.5 2.2 0 2.2 2 2.2 3.6V21H24v-7.4c0-3.7-.8-6.5-5.1-6.5-2.1 0-3.5 1.1-4.1 2.2h-.1V7.5h-4.3V21Z"
+              ></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <p class="site-footer__tagline">Automatización y control industrial</p>
+      <p class="site-footer__sub">Baja California, México</p>
+    </div>
+
+    <nav class="site-footer__nav-group" aria-labelledby="footer-solutions-title">
+      <h2 id="footer-solutions-title" class="site-footer__heading">Capacidades</h2>
+      <ul>
+        {
+          solutionLinks.map((item) => (
+            <li>
+              <a class="site-footer__link" href={item.href}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <nav class="site-footer__nav-group" aria-labelledby="footer-company-title">
+      <h2 id="footer-company-title" class="site-footer__heading">Compañía</h2>
+      <ul>
+        {
+          companyLinks.map((item) => (
+            <li>
+              <a class="site-footer__link" href={item.href}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="site-footer__contact">
+      <h2 class="site-footer__heading">Contacto</h2>
+      <a class="site-footer__email" href={c.contact.emailHref}>{c.contact.email}</a>
+
+      <div class="site-footer__sedes">
+        {
+          c.trust.locations.map((location) => (
+            <a class="site-footer__sede" href={location.phoneHref}>
+              <UiIcon name="phone" />
+              <span>
+                <strong>{location.city}</strong>
+                {location.phone}
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="site-footer__legal">
+      <span>© {year} {c.company.legalName}</span>
+      <div class="site-footer__legal-docs" aria-label="Documentos legales">
+        <span>Aviso de Privacidad</span>
+        <span>Términos y Condiciones</span>
+      </div>
+    </div>
+  </div>
+</footer>

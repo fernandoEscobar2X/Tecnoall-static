@@ -1,0 +1,303 @@
+---
+import { Image } from 'astro:assets';
+import PageHero from '@components/pages/PageHero.astro';
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import { solutionPages } from '@/content/routes';
+import { siteConfig } from '@config/site';
+import { itemListSchema, pageSchema, serviceSchema } from '@lib/seo/schema';
+import { getCaseStageImage } from '@/content/cases';
+
+import cabinetImage from '@assets/tecnoall/industria/tablero-control.png';
+import serviceImage from '@assets/tecnoall/industria/instalacion-servicios.png';
+import hmiProceso from '@assets/tecnoall/soluciones/plc-scada.jpeg';
+import aboutImage from '@assets/tecnoall/industria/planta-instalacion.png';
+
+const tallerTablero = getCaseStageImage('linea-lentes-carl-zeiss', 'stage-control-panel');
+const appMovil = getCaseStageImage('acueducto-cespt-tijuana', 'stage-mobile-app');
+
+const title = 'Soluciones de automatización e integración industrial';
+const description =
+  'Tableros, PLC, telemetría y datos de planta: de la ingeniería al arranque en sitio.';
+const canonical = `${siteConfig.siteUrl}/soluciones/`;
+const solutionItems = solutionPages.map((solution) => ({
+  name: solution.title,
+  description: solution.body,
+  url: `/soluciones/${solution.slug}/`,
+}));
+const solutionNodes = solutionPages.map((solution) => {
+  const url = `${siteConfig.siteUrl}/soluciones/${solution.slug}/`;
+  return serviceSchema({ name: solution.title, description: solution.body, url });
+});
+---
+
+<SiteLayout
+  seo={{
+    title,
+    description,
+    image: '/og/soluciones.png',
+    imageAlt: 'Supervisión de un proceso industrial mediante PLC y SCADA',
+    jsonLd: pageSchema({
+      name: title,
+      description,
+      path: '/soluciones/',
+      image: '/og/soluciones.png',
+      type: 'CollectionPage',
+      breadcrumbs: [
+        { name: 'Inicio', path: '/' },
+        { name: 'Soluciones', path: '/soluciones/' },
+      ],
+      mainEntityId: `${canonical}#items`,
+      additionalNodes: [
+        itemListSchema('Soluciones industriales', canonical, solutionItems),
+        ...solutionNodes,
+      ],
+    }),
+  }}
+>
+  <PageHero
+    title={title}
+    lead={description}
+    image={tallerTablero}
+    imageAlt="Fabricación y ensamble de tableros de control en taller de Tecno All"
+  />
+
+  <div class="sol-page">
+    <section id="integracion" class="sol-sec sol-sec--integracion" aria-labelledby="int-title">
+      <div class="site-shell sol-sec__grid sol-sec__grid--asymmetric">
+        <div class="sol-sec__copy">
+          <h2 id="int-title" class="sol-sec__title">Integración de sistemas industriales</h2>
+          <p class="sol-sec__desc">
+            Diseño e integración de sistemas electrónicos industriales y maquinaria de manufactura
+            con plataformas de control automatizado. Unificamos sensores, actuadores y controladores
+            en una arquitectura operativa coherente.
+          </p>
+          <a href="/soluciones/integracion-de-sistemas/" class="sol-sec__link">
+            <span>Ver integración de sistemas</span>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
+
+        <div class="sol-sec__media sol-sec__media--wide">
+          <Image
+            src={serviceImage}
+            alt="Integración de sistemas y líneas industriales por Tecno All"
+            class="sol-sec__img"
+            widths={[720, 1080, 1440]}
+            sizes="(max-width: 900px) 100vw, 58vw"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section id="tableros" class="sol-sec sol-sec--tableros" aria-labelledby="tab-title">
+      <div class="site-shell sol-sec__grid sol-sec__grid--reverse">
+        <div class="sol-sec__media sol-sec__media--dominant">
+          <Image
+            src={cabinetImage}
+            alt="Tableros de control fabricados e integrados por Tecno All"
+            class="sol-sec__img"
+            widths={[800, 1200, 1600]}
+            sizes="(max-width: 900px) 100vw, 62vw"
+          />
+          <span class="sol-sec__caption">
+            Ensamble de tableros NEMA e IEC en taller propio · Tijuana, B.C.
+          </span>
+        </div>
+
+        <div class="sol-sec__copy">
+          <h2 id="tab-title" class="sol-sec__title">Diseño y fabricación de tableros de control</h2>
+          <p class="sol-sec__desc">
+            Ingeniería eléctrica en EPLAN, mecanizado de envolventes Rittal, montaje y alambrado de
+            alta densidad bajo normas NEMA e IEC con pruebas punto a punto en taller.
+          </p>
+          <a href="/soluciones/tableros-de-control/" class="sol-sec__link">
+            <span>Ver diseño y fabricación</span>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="plc-scada" class="sol-sec sol-sec--dark" aria-labelledby="plc-title">
+      <div class="site-shell sol-sec__grid sol-sec__grid--equal">
+        <div class="sol-sec__copy">
+          <h2 id="plc-title" class="sol-sec__title sol-sec__title--light">
+            PLC, SCADA y mantenimiento
+          </h2>
+          <p class="sol-sec__desc sol-sec__desc--light">
+            Programación, actualización, conversión y soporte de controladores industriales.
+            Desarrollamos lógicas de control en Siemens TIA Portal / STEP 7 y sistemas SCADA WinCC
+            para visualización de procesos en tiempo real.
+          </p>
+          <div class="sol-tech-tags">
+            <span>Siemens S7-1500 / 1200</span>
+            <span>TIA Portal V18</span>
+            <span>WinCC SCADA</span>
+            <span>PROFINET</span>
+          </div>
+          <a href="/soluciones/plc-scada/" class="sol-sec__link sol-sec__link--light">
+            <span>Ver soluciones PLC / SCADA</span>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
+
+        <div class="sol-sec__media">
+          <figure class="sol-hmi-frame">
+            <Image
+              src={hmiProceso}
+              alt="Interfaz HMI y supervisión de proceso industrial"
+              class="sol-sec__img sol-sec__img--hmi"
+              widths={[640, 960, 1280]}
+              sizes="(max-width: 900px) 100vw, 48vw"
+            />
+            <figcaption class="sol-hmi-frame__caption">
+              Supervisión de proceso en tiempo real mediante interfaz gráfica HMI
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="telemetria" class="sol-sec sol-sec--telemetria" aria-labelledby="tel-title">
+      <div class="site-shell sol-sec__grid sol-sec__grid--asymmetric">
+        <div class="sol-sec__copy">
+          <h2 id="tel-title" class="sol-sec__title">Control, telemetría y visualización web</h2>
+          <p class="sol-sec__desc">
+            Supervisión remota de estaciones operativas, niveles de almacenamiento y líneas
+            distribuidas. Conectamos variables de campo a interfaces web y aplicaciones móviles sin
+            depender de infraestructura propietaria en sitio.
+          </p>
+          <a href="/soluciones/telemetria-visualizacion-web/" class="sol-sec__link">
+            <span>Ver telemetría y visualización web</span>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
+
+        <div class="sol-sec__media sol-sec__media--doc">
+          <figure class="sol-doc-frame">
+            <Image
+              src={appMovil}
+              alt="Supervisión remota vía aplicación web y móvil para acueductos"
+              class="sol-doc-frame__img"
+              widths={[500, 800, 1000]}
+              sizes="(max-width: 900px) 100vw, 44vw"
+            />
+            <figcaption class="sol-doc-frame__caption">
+              Visualización remota y monitoreo de variables críticas en tiempo real
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="industria4" class="sol-sec sol-sec--i4" aria-labelledby="i4-title">
+      <div class="site-shell sol-sec__grid sol-sec__grid--reverse">
+        <div class="sol-sec__media">
+          <Image
+            src={aboutImage}
+            alt="Digitalización y conectividad de planta para Industria 4.0"
+            class="sol-sec__img"
+            widths={[640, 960, 1280]}
+            sizes="(max-width: 900px) 100vw, 48vw"
+          />
+        </div>
+
+        <div class="sol-sec__copy">
+          <h2 id="i4-title" class="sol-sec__title">Software para Industria 4.0</h2>
+          <p class="sol-sec__desc">
+            Sistemas informáticos orientados a conectar las capas operativas con la gestión de
+            planta. Captura de datos, trazabilidad de producción y análisis de rendimiento
+            integrados directamente con el hardware de control.
+          </p>
+          <a href="/soluciones/industria-4-0/" class="sol-sec__link">
+            <span>Ver soluciones Industria 4.0</span>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="sol-close" aria-labelledby="sol-close-title">
+      <div class="site-shell sol-close__inner">
+        <div class="sol-close__text">
+          <h2 id="sol-close-title" class="sol-close__title">Cuéntenos qué necesita automatizar.</h2>
+          <p class="sol-close__desc">
+            Describa el proceso y el equipo instalado. Le respondemos con una propuesta.
+          </p>
+        </div>
+
+        <div class="sol-close__actions">
+          <button class="sol-close__cta" type="button" data-open-quote>
+            <span>Hablar sobre un proyecto</span>
+          </button>
+          <a href="/productos/" class="sol-close__sub-link">Explorar catálogo de productos</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</SiteLayout>

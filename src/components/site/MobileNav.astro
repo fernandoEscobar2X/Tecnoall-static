@@ -1,0 +1,86 @@
+---
+import UiIcon from '@components/ui/UiIcon.astro';
+
+interface NavigationItem {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  items: readonly NavigationItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="site-menu" data-open="false" data-mobile-menu>
+  <button
+    class="site-menu__toggle site-header__island"
+    type="button"
+    aria-expanded="false"
+    aria-controls="mobile-navigation-panel"
+    aria-label="Abrir menú"
+    data-menu-toggle
+  >
+    <span>Menú</span>
+    <UiIcon name="menuScale" class="site-menu__menu-icon" />
+    <UiIcon name="xmark" class="site-menu__close-icon" />
+  </button>
+
+  <div class="site-menu__panel" id="mobile-navigation-panel" data-menu-panel>
+    <nav class="site-menu__nav" aria-label="Navegación móvil">
+      {
+        items.map((item) => (
+          <a class="site-menu__item" href={item.href}>
+            <span>{item.label}</span>
+          </a>
+        ))
+      }
+    </nav>
+
+    <button class="site-menu__quote" type="button" data-open-quote>
+      <span>
+        <small>¿Tienes un proyecto?</small>
+        <strong>Solicitar cotización</strong>
+      </span>
+    </button>
+
+    <div class="site-menu__footer">
+      <span>Automatización · Control</span>
+      <a href="/empresa/#escribanos">Escríbanos</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-mobile-menu]');
+  const toggle = root?.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const panel = root?.querySelector<HTMLElement>('[data-menu-panel]');
+
+  if (root && toggle && panel) {
+    const setOpen = (open: boolean) => {
+      root.dataset.open = String(open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+      document.body.style.overflow = open ? 'hidden' : '';
+    };
+
+    toggle.addEventListener('click', () => setOpen(root.dataset.open !== 'true'));
+
+    panel.addEventListener('click', (event) => {
+      if ((event.target as Element)?.closest('a, button')) setOpen(false);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && root.dataset.open === 'true') {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    document.addEventListener('pointerdown', (event) => {
+      if (root.dataset.open !== 'true') return;
+      if (!root.contains(event.target as Node)) setOpen(false);
+    });
+  }
+</script>

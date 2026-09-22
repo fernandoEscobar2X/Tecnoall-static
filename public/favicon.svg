@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Tecno All</title>
+  <path d="M32 3 6 18l15 9 11-6Z" fill="#08a2d2"/>
+  <path d="m32 3 26 15-15 9-11-6Z" fill="#078eb9"/>
+  <path d="M6 18v29l26 15v-9l-11-6V27Z" fill="#116b8b"/>
+  <path d="M58 18v29L32 62v-9l11-6V27Z" fill="#197b9d"/>
+</svg>

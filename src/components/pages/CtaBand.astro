@@ -1,0 +1,28 @@
+---
+interface Props {
+  title: string;
+  body?: string;
+  tone?: 'deep' | 'accent' | 'paper';
+}
+
+const { title, body, tone = 'deep' } = Astro.props;
+const ghostClass =
+  tone === 'paper'
+    ? 'brand-button brand-button--ghost'
+    : 'brand-button brand-button--ghost-on-dark';
+---
+
+<section class:list={['cta-band', `cta-band--${tone}`]}>
+  <div class="site-shell cta-band__inner" data-reveal>
+    <div>
+      <h2>{title}</h2>
+      {body && <p>{body}</p>}
+    </div>
+    <div class="cta-band__actions">
+      <slot>
+        <button class="brand-button" type="button" data-open-quote>Solicitar cotización</button>
+        <a class={ghostClass} href="/empresa/#escribanos">Escribir al equipo</a>
+      </slot>
+    </div>
+  </div>
+</section>

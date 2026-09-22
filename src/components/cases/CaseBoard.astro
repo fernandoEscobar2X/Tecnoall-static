@@ -1,0 +1,170 @@
+---
+import { Image } from 'astro:assets';
+import UiIcon from '@components/ui/UiIcon.astro';
+import type { CaseStudy } from '@/content/cases';
+
+interface Props {
+  caseStudy: CaseStudy;
+  index?: number;
+}
+
+const { caseStudy, index = 0 } = Astro.props;
+const scope = caseStudy.homeScope ?? caseStudy.services.join(' · ');
+const facts = [caseStudy.location, caseStudy.year, caseStudy.brands.join(', ')];
+const imageLoading = index < 3 ? 'eager' : 'lazy';
+---
+
+<article class="case-entry" id={caseStudy.slug} data-case-set>
+  <button class="case-card" type="button" data-open-dossier>
+    <span class="case-card__media">
+      <Image
+        src={caseStudy.image}
+        alt=""
+        widths={[480, 720, 960]}
+        sizes="(min-width: 1100px) 33vw, (min-width: 720px) 50vw, 100vw"
+        loading={imageLoading}
+      />
+    </span>
+    <span class="case-card__body">
+      <strong>{caseStudy.title}</strong>
+      <span class="case-card__place">{caseStudy.location} · {caseStudy.year}</span>
+      <span class="case-card__summary">{caseStudy.summary}</span>
+      <span class="case-card__cue">Leer el caso</span>
+    </span>
+  </button>
+
+  <dialog class="case-modal" data-case-dossier aria-labelledby={`${caseStudy.slug}-modal-title`}>
+    <header class="case-modal__head">
+      <form method="dialog">
+        <button type="submit" value="close" aria-label="Cerrar">
+          <UiIcon name="xmark" />
+        </button>
+      </form>
+    </header>
+
+    <div class="case-modal__read">
+      <h2 id={`${caseStudy.slug}-modal-title`}>{caseStudy.title}</h2>
+      <p class="case-modal__lead">{caseStudy.summary}</p>
+
+      <p class="case-modal__facts">
+        {facts.map((fact) => <span>{fact}</span>)}
+      </p>
+
+      {caseStudy.status && <p class="case-modal__status">{caseStudy.status}</p>}
+
+      {
+        caseStudy.externalUrl && (
+          <p class="case-modal__link">
+            <a href={caseStudy.externalUrl} target="_blank" rel="noopener noreferrer">
+              Ver portal en operación
+            </a>
+          </p>
+        )
+      }
+
+      <div class="case-modal__scope">
+        <h3>Qué se hizo</h3>
+        <p>{scope}</p>
+      </div>
+
+      <div class="case-modal__evidence">
+        <h3>Evidencia</h3>
+        <ol>
+          {
+            caseStudy.stages.map((stage) => (
+              <li>
+                <figure>
+                  <Image
+                    src={stage.image}
+                    alt={stage.imageAlt}
+                    widths={[480, 720, 960]}
+                    sizes="(min-width: 720px) 220px, 100vw"
+                    loading="lazy"
+                  />
+                  <figcaption>
+                    {stage.tags.includes('Render') && (
+                      <span class="case-modal__render-tag">Render de ingeniería</span>
+                    )}
+                    <strong>{stage.title}</strong>
+                    <span>{stage.summary}</span>
+                  </figcaption>
+                </figure>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+
+      <button class="brand-button" type="button" data-open-quote>Solicitar cotización</button>
+    </div>
+  </dialog>
+</article>
+
+<script>
+  const wall = document.documentElement;
+
+  if (wall.dataset.caseWall !== 'ready') {
+    wall.dataset.caseWall = 'ready';
+
+    const sets = document.querySelectorAll<HTMLElement>('[data-case-set]');
+
+    const lockPage = () => {
+      if (wall.classList.contains('is-case-modal-open')) return;
+      wall.dataset.caseModalScroll = String(window.scrollY);
+      wall.classList.add('is-case-modal-open');
+      document.body.style.top = `-${wall.dataset.caseModalScroll}px`;
+    };
+
+    const unlockPage = () => {
+      if (!wall.classList.contains('is-case-modal-open')) return;
+      const y = Number(wall.dataset.caseModalScroll ?? 0);
+      wall.classList.remove('is-case-modal-open');
+      document.body.style.top = '';
+      delete wall.dataset.caseModalScroll;
+      window.scrollTo(0, y);
+    };
+
+    const openSet = (root: HTMLElement) => {
+      const dialog = root.querySelector<HTMLDialogElement>('[data-case-dossier]');
+      if (!dialog) return;
+      if (!dialog.open) dialog.showModal();
+      lockPage();
+      if (root.id && location.hash !== `#${root.id}`) {
+        history.replaceState(null, '', `#${root.id}`);
+      }
+    };
+
+    const syncHash = () => {
+      const slug = location.hash.replace('#', '');
+      sets.forEach((root) => {
+        const dialog = root.querySelector<HTMLDialogElement>('[data-case-dossier]');
+        if (!dialog) return;
+        if (slug && root.id === slug) openSet(root);
+        else if (dialog.open) dialog.close();
+      });
+    };
+
+    sets.forEach((root) => {
+      const dialog = root.querySelector<HTMLDialogElement>('[data-case-dossier]');
+
+      root.querySelector('[data-open-dossier]')?.addEventListener('click', () => openSet(root));
+
+      dialog?.addEventListener('click', (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+
+      dialog?.addEventListener('close', () => {
+        const anotherOpen = [...sets].some(
+          (entry) => entry.querySelector<HTMLDialogElement>('[data-case-dossier]')?.open,
+        );
+        if (!anotherOpen) unlockPage();
+        if (location.hash === `#${root.id}`) {
+          history.replaceState(null, '', `${location.pathname}${location.search}`);
+        }
+      });
+    });
+
+    syncHash();
+    window.addEventListener('hashchange', syncHash);
+  }
+</script>
