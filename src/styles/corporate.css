@@ -2366,6 +2366,30 @@
   gap: 8px 20px;
 }
 
+.site-footer__legal-docs a {
+  color: inherit;
+  text-decoration-color: rgb(var(--accent-light-rgb) / 0.45);
+  text-underline-offset: 3px;
+  transition: color 180ms ease;
+}
+
+.site-footer__legal-docs a:hover,
+.site-footer__legal-docs a:focus-visible {
+  color: white;
+}
+
+.form-privacy-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.form-privacy-note a {
+  color: var(--blue-800);
+  text-underline-offset: 2px;
+}
+
 .whatsapp-float {
   position: fixed;
   z-index: 180;

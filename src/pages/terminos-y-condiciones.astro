@@ -1,0 +1,172 @@
+---
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import { pageSchema } from '@lib/seo/schema';
+
+const title = 'Términos y condiciones';
+const description =
+  'Condiciones de uso del sitio corporativo de Tecno All y alcance de sus solicitudes de información y cotización.';
+---
+
+<SiteLayout
+  seo={{
+    title,
+    description,
+    jsonLd: pageSchema({
+      name: title,
+      description,
+      path: '/terminos-y-condiciones/',
+      type: 'WebPage',
+      breadcrumbs: [
+        { name: 'Inicio', path: '/' },
+        { name: title, path: '/terminos-y-condiciones/' },
+      ],
+    }),
+  }}
+>
+  <article class="legal-page">
+    <div class="legal-page__shell">
+      <header class="legal-page__header">
+        <p class="legal-page__eyebrow">Uso del sitio corporativo</p>
+        <h1>Términos y condiciones</h1>
+        <p class="legal-page__intro">
+          Estas condiciones delimitan el uso de este sitio y distinguen claramente una consulta
+          digital de una propuesta comercial formal.
+        </p>
+        <time class="legal-page__updated" datetime="2026-09-22"
+          >Última actualización: 22 de septiembre de 2026</time
+        >
+      </header>
+
+      <div class="legal-page__content">
+        <section>
+          <h2>1. Titular del sitio</h2>
+          <p>
+            Este sitio es operado por <strong>Tecno All de México S.A. de C.V.</strong>, con
+            domicilio en Calle Cinco Sur #140, Col. Ciudad Industrial, Tijuana, Baja California,
+            C.P. 22444, México. Puede contactarnos en <a href="mailto:ventas@tecnoall.com"
+              >ventas@tecnoall.com</a
+            >
+            o al <a href="tel:+526646821244">(664) 682-1244</a>.
+          </p>
+        </section>
+
+        <section>
+          <h2>2. Alcance del sitio</h2>
+          <p>
+            El sitio presenta información corporativa sobre capacidades, fabricantes, familias de
+            producto y proyectos de Tecno All. Su contenido es informativo y está dirigido
+            principalmente a empresas y profesionales que buscan soluciones de automatización,
+            control y suministro industrial.
+          </p>
+          <p>
+            Actualmente el sitio no procesa compras, pagos, reservas de inventario ni pedidos.
+            Agregar productos a una solicitud o enviar un formulario no constituye una compraventa
+            ni obliga a Tecno All a suministrar un producto o servicio.
+          </p>
+        </section>
+
+        <section>
+          <h2>3. Solicitudes y cotizaciones</h2>
+          <p>
+            Una solicitud enviada por el sitio únicamente inicia un contacto comercial. Toda
+            cotización formal deberá ser emitida o confirmada por personal autorizado de Tecno All e
+            indicar, según corresponda, alcance, especificaciones, precio, moneda, impuestos,
+            disponibilidad, entrega, vigencia y condiciones de pago.
+          </p>
+          <p>
+            La aceptación de una operación se rige por la cotización, pedido, contrato u otro
+            documento comercial celebrado entre las partes. En caso de diferencia, dicho documento
+            prevalece sobre la información general de este sitio.
+          </p>
+        </section>
+
+        <section>
+          <h2>4. Información de productos y servicios</h2>
+          <p>
+            Procuramos mantener información clara y actualizada. Sin embargo, imágenes, marcas,
+            especificaciones, compatibilidades y disponibilidad pueden cambiar por decisión de los
+            fabricantes o por actualización del catálogo. Antes de tomar una decisión técnica o de
+            compra, solicite confirmación escrita y consulte la documentación vigente del
+            fabricante.
+          </p>
+          <p>
+            Tecno All no sustituye el análisis de ingeniería, seguridad o cumplimiento normativo que
+            requiera cada instalación. La selección y puesta en servicio deberá considerar las
+            condiciones reales del proyecto y, cuando corresponda, ser realizada por personal
+            calificado.
+          </p>
+        </section>
+
+        <section>
+          <h2>5. Uso permitido</h2>
+          <p>Al utilizar el sitio se obliga a no:</p>
+          <ul>
+            <li>Interferir con su operación, seguridad o disponibilidad.</li>
+            <li>Intentar acceder sin autorización a sistemas, datos o áreas restringidas.</li>
+            <li>
+              Enviar contenido ilícito, engañoso, dañino o datos personales de terceros sin
+              autorización.
+            </li>
+            <li>
+              Copiar o explotar contenido del sitio fuera de los límites permitidos por la ley.
+            </li>
+            <li>Usar formularios o canales de contacto para mensajes automatizados o abusivos.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>6. Propiedad intelectual</h2>
+          <p>
+            El diseño, textos, fotografías y materiales propios del sitio pertenecen a Tecno All o
+            se utilizan con autorización. Las marcas, logotipos y fichas de terceros pertenecen a
+            sus respectivos titulares; su presencia no concede licencia ni implica una relación
+            distinta de la expresamente informada.
+          </p>
+        </section>
+
+        <section>
+          <h2>7. Enlaces y servicios externos</h2>
+          <p>
+            El sitio puede enlazar a fabricantes, mapas, WhatsApp y redes sociales. Al abrirlos
+            abandona nuestro entorno y queda sujeto a las condiciones y avisos del tercero. Tecno
+            All no controla la disponibilidad ni el tratamiento de información realizado por esos
+            servicios.
+          </p>
+        </section>
+
+        <section>
+          <h2>8. Disponibilidad y responsabilidad</h2>
+          <p>
+            Procuramos mantener el sitio seguro y disponible, pero pueden existir interrupciones por
+            mantenimiento, fallas de terceros o causas fuera de nuestro control. Nada en estas
+            condiciones excluye derechos ni responsabilidades que no puedan limitarse conforme a la
+            legislación aplicable.
+          </p>
+        </section>
+
+        <section>
+          <h2>9. Privacidad</h2>
+          <p>
+            El tratamiento de datos personales se describe en nuestro
+            <a href="/aviso-de-privacidad/">aviso de privacidad</a>, que forma parte de estas
+            condiciones para efectos informativos.
+          </p>
+        </section>
+
+        <section>
+          <h2>10. Cambios y legislación aplicable</h2>
+          <p>
+            Podemos actualizar estas condiciones para reflejar cambios legales, técnicos o en el
+            alcance del sitio. La versión vigente será la publicada aquí con su fecha de
+            actualización.
+          </p>
+          <p>
+            Estas condiciones se interpretan conforme a las leyes de México. Cualquier controversia
+            se atenderá primero de buena fe entre las partes y, de ser necesario, ante las
+            autoridades competentes conforme a la legislación aplicable.
+          </p>
+        </section>
+      </div>
+    </div>
+  </article>
+</SiteLayout>

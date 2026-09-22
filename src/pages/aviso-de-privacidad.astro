@@ -1,0 +1,159 @@
+---
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import { pageSchema } from '@lib/seo/schema';
+
+const title = 'Aviso de privacidad';
+const description =
+  'Conozca cómo Tecno All trata los datos personales enviados mediante sus formularios de contacto y cotización.';
+---
+
+<SiteLayout
+  seo={{
+    title,
+    description,
+    jsonLd: pageSchema({
+      name: title,
+      description,
+      path: '/aviso-de-privacidad/',
+      type: 'WebPage',
+      breadcrumbs: [
+        { name: 'Inicio', path: '/' },
+        { name: title, path: '/aviso-de-privacidad/' },
+      ],
+    }),
+  }}
+>
+  <article class="legal-page">
+    <div class="legal-page__shell">
+      <header class="legal-page__header">
+        <p class="legal-page__eyebrow">Información y control de sus datos</p>
+        <h1>Aviso de privacidad</h1>
+        <p class="legal-page__intro">
+          Este aviso explica, en lenguaje directo, qué información recibimos cuando una persona se
+          comunica con Tecno All, para qué la utilizamos y cómo puede ejercer control sobre ella.
+        </p>
+        <time class="legal-page__updated" datetime="2026-09-22"
+          >Última actualización: 22 de septiembre de 2026</time
+        >
+      </header>
+
+      <div class="legal-page__content">
+        <section>
+          <h2>1. Responsable del tratamiento</h2>
+          <p>
+            <strong>Tecno All de México S.A. de C.V.</strong> es responsable del tratamiento de los datos
+            personales descritos en este aviso. Su domicilio de contacto es:
+          </p>
+          <address>
+            Calle Cinco Sur #140, Col. Ciudad Industrial, Tijuana, Baja California, C.P. 22444,
+            México. Correo: <a href="mailto:ventas@tecnoall.com">ventas@tecnoall.com</a>. Teléfono:
+            <a href="tel:+526646821244">(664) 682-1244</a>.
+          </address>
+        </section>
+
+        <section>
+          <h2>2. Datos que recabamos</h2>
+          <p>
+            Cuando utiliza nuestros formularios podemos recibir nombre, empresa, correo electrónico,
+            teléfono, tipo y descripción del requerimiento, productos seleccionados, página de
+            origen, canal elegido y fecha de envío. También podemos conservar la comunicación
+            posterior necesaria para atender la solicitud.
+          </p>
+          <p>
+            Este sitio no solicita datos personales sensibles. Le pedimos no incluirlos en el campo
+            de texto libre ni enviar información confidencial que no sea necesaria para su consulta.
+          </p>
+        </section>
+
+        <section>
+          <h2>3. Para qué utilizamos la información</h2>
+          <ul>
+            <li>Identificar y responder a la persona que solicita información.</li>
+            <li>Analizar requerimientos técnicos, comerciales o de servicio.</li>
+            <li>Preparar y dar seguimiento a propuestas o cotizaciones solicitadas.</li>
+            <li>Canalizar la solicitud al personal adecuado de Tecno All.</li>
+            <li>Conservar evidencia de la atención y proteger la seguridad del sitio.</li>
+            <li>Cumplir obligaciones legales y atender requerimientos de autoridad competente.</li>
+          </ul>
+          <p>
+            No utilizamos los datos enviados en estos formularios para publicidad automatizada ni
+            los vendemos a terceros.
+          </p>
+        </section>
+
+        <section>
+          <h2>4. Encargados, servicios externos y transferencias</h2>
+          <p>
+            Para operar el sitio utilizamos proveedores de infraestructura, alojamiento y recepción
+            de formularios que tratan información por cuenta de Tecno All bajo sus condiciones de
+            servicio y medidas de seguridad. Entre ellos se encuentra Netlify, Inc.
+          </p>
+          <p>
+            Si elige continuar por WhatsApp, usted inicia voluntariamente la comunicación con ese
+            servicio y su información también queda sujeta a las políticas de su proveedor. Los
+            enlaces a mapas y redes sociales funcionan de la misma manera cuando decide abrirlos.
+          </p>
+          <p>
+            Fuera de encargados que actúan por cuenta de Tecno All y de los supuestos permitidos por
+            la legislación aplicable, no realizamos transferencias de sus datos sin el
+            consentimiento que corresponda.
+          </p>
+        </section>
+
+        <section>
+          <h2>5. Derechos ARCO y limitación del tratamiento</h2>
+          <p>
+            Puede solicitar acceso, rectificación, cancelación u oposición al tratamiento de sus
+            datos, así como limitar su uso o revocar su consentimiento, escribiendo a
+            <a href="mailto:ventas@tecnoall.com?subject=Derechos%20ARCO">ventas@tecnoall.com</a> con el
+            asunto “Derechos ARCO”.
+          </p>
+          <p>La solicitud deberá indicar:</p>
+          <ol>
+            <li>Nombre y medio para recibir la respuesta.</li>
+            <li>Documento que permita acreditar su identidad o representación.</li>
+            <li>Derecho que desea ejercer y una descripción clara de los datos involucrados.</li>
+            <li>
+              Información que ayude a localizar los datos y, para rectificación, el cambio
+              solicitado.
+            </li>
+          </ol>
+          <p>
+            Comunicaremos la determinación dentro de los veinte días siguientes a la recepción de
+            una solicitud completa. Si resulta procedente, se hará efectiva dentro de los quince
+            días siguientes, conforme a los plazos y excepciones previstos por la ley.
+          </p>
+        </section>
+
+        <section>
+          <h2>6. Conservación y seguridad</h2>
+          <p>
+            Conservamos la información durante el tiempo razonablemente necesario para atender y dar
+            seguimiento a la solicitud, cumplir obligaciones legales o resolver posibles
+            controversias. Aplicamos medidas administrativas y técnicas acordes con la naturaleza de
+            la información; ningún sistema conectado a internet puede garantizar seguridad absoluta.
+          </p>
+        </section>
+
+        <section>
+          <h2>7. Cookies y tecnologías similares</h2>
+          <p>
+            En su versión actual, este sitio no instala herramientas propias de analítica ni cookies
+            publicitarias. Algunos servicios externos que usted abra voluntariamente, como WhatsApp,
+            mapas o redes sociales, pueden utilizar sus propias tecnologías bajo sus respectivos
+            avisos.
+          </p>
+        </section>
+
+        <section>
+          <h2>8. Cambios a este aviso</h2>
+          <p>
+            Las actualizaciones se publicarán en esta misma dirección e indicarán su fecha de última
+            modificación. Si un cambio requiere una manifestación adicional de consentimiento, se
+            solicitará por un medio adecuado antes de aplicar el nuevo tratamiento.
+          </p>
+        </section>
+      </div>
+    </div>
+  </article>
+</SiteLayout>

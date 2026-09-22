@@ -344,6 +344,10 @@ export default function QuoteRequest({ whatsappHref }: Props) {
                 />
               </label>
             </div>
+            <p className="form-privacy-note">
+              Al enviar sus datos, acepta su tratamiento para atender esta solicitud conforme al{' '}
+              <a href="/aviso-de-privacidad/">aviso de privacidad</a>.
+            </p>
             <div className="quote-dialog__submit">
               <button type="button" data-quote-back onClick={() => setStep(1)}>
                 Volver
