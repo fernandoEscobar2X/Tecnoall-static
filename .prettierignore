@@ -1,6 +1,7 @@
 node_modules
 dist
 .astro
+.netlify
 .next
 next-env.d.ts
 coverage

@@ -12,12 +12,13 @@
     "start": "astro preview",
     "build": "astro check && astro build",
     "preview": "astro preview",
+    "test:forms": "node --test tests/form-validation.test.ts",
     "check": "astro check",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "quality": "npm run format:check && npm run lint && npm run check && npm run build && npm run security:prod",
+    "quality": "npm run format:check && npm run lint && npm run test:forms && npm run check && npm run build && npm run security:prod",
     "security:prod": "npm audit --omit=dev --audit-level=high",
     "security:all": "npm audit --audit-level=high",
     "security:secrets": "node scripts/check-secrets.mjs"
@@ -39,6 +40,7 @@
   "devDependencies": {
     "@astrojs/check": "0.9.10",
     "@eslint/js": "9.39.5",
+    "@netlify/functions": "6.0.0",
     "@types/node": "24.x",
     "@types/qrcode": "1.5.6",
     "@types/react": "19.2.18",

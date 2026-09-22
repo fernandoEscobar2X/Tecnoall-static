@@ -7,7 +7,7 @@ import tseslint from 'typescript-eslint';
 
 export default defineConfig(
   {
-    ignores: ['.astro/**', 'dist/**', 'coverage/**', 'node_modules/**'],
+    ignores: ['.astro/**', '.netlify/**', 'dist/**', 'coverage/**', 'node_modules/**'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
