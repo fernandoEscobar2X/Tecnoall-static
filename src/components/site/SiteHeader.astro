@@ -32,7 +32,10 @@ const isCurrent = (href: string) =>
 
     <div class="site-header__end">
       <div class="site-header__actions">
-        <button type="button" data-open-quote>Solicitar cotización</button>
+        <button type="button" data-open-quote>
+          <span class="quote-open__full">Solicitar cotización</span>
+          <span class="quote-open__short">Cotización</span>
+        </button>
       </div>
       <MobileNav items={primaryNavigation} />
     </div>

@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useGSAP } from '@gsap/react';
 import Autoplay from 'embla-carousel-autoplay';
 import useEmblaCarousel from 'embla-carousel-react';
 import { WheelGesturesPlugin } from 'embla-carousel-wheel-gestures';
 import { gsap } from 'gsap';
-import { getQuotePicks, subscribeQuote } from '@/lib/quote-selection';
 
 gsap.registerPlugin(useGSAP);
 
@@ -15,7 +14,6 @@ export interface SolutionSlide {
   shortTitle: string;
   body: string;
   href?: string;
-  quoteTitle?: string;
   image: {
     src: string;
     srcSet: string;
@@ -257,15 +255,13 @@ export default function SolutionsScaleCarousel({
     };
   }, [reducedMotion, selectedIndex]);
 
-  const picks = useSyncExternalStore(subscribeQuote, getQuotePicks, getQuotePicks);
   const selectedSlide = slides[selectedIndex] ?? slides[0];
   if (!selectedSlide) return null;
-  const quoted = picks.some((pick) => pick.id === selectedSlide.id);
 
   return (
     <div
       ref={rootRef}
-      className={`solutions-scale${variant === 'product' ? 'solutions-scale--product' : ''}`}
+      className={`solutions-scale${variant === 'product' ? ' solutions-scale--product' : ''}`}
       aria-roledescription="carrusel"
       aria-label={label}
     >
@@ -313,20 +309,6 @@ export default function SolutionsScaleCarousel({
           )}
         </h3>
         <p data-caption>{selectedSlide.body}</p>
-        {selectedSlide.quoteTitle ? (
-          <button
-            type="button"
-            className={`product-sample__quote solutions-scale__quote${quoted ? 'is-selected' : ''}`}
-            data-quote-product={selectedSlide.id}
-            data-product-title={selectedSlide.quoteTitle}
-            aria-pressed={quoted}
-            data-caption
-          >
-            <span className="quote-add__idle">Agregar a cotización</span>
-            <span className="quote-add__done">Agregada</span>
-            <i aria-hidden="true">+</i>
-          </button>
-        ) : null}
       </div>
     </div>
   );

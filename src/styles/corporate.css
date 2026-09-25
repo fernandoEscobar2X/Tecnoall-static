@@ -284,6 +284,10 @@
   background: var(--color-brand-bright);
 }
 
+.quote-open__short {
+  display: none;
+}
+
 .netlify-honeypot {
   position: absolute;
   width: 1px;
@@ -799,7 +803,9 @@
 }
 
 @media (min-width: 901px) {
-  .service-mobile-spotlight {
+  .service-mobile-spotlight,
+  .product-sample,
+  .services-scale {
     display: none !important;
   }
 }
@@ -1738,8 +1744,7 @@
 
 .product-sample {
   display: grid;
-  grid-template-columns: minmax(220px, 340px) minmax(0, 1fr);
-  align-items: stretch;
+  grid-template-columns: minmax(280px, 480px) minmax(0, 1fr);
   overflow: hidden;
   border: 1px solid var(--line-soft);
   background: white;
@@ -1747,7 +1752,7 @@
 
 .product-sample__media {
   position: relative;
-  min-height: 100%;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   background: white;
 }
@@ -1775,104 +1780,83 @@
   object-position: center;
 }
 
-.product-sample__list {
+.product-sample__detail {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   min-width: 0;
   border-left: 1px solid var(--line-soft);
 }
 
-.product-sample__rows {
-  display: flex;
-  flex-direction: column;
+.product-sample__panel:not([hidden]) {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 28px 32px 20px;
 }
 
-.product-sample__item {
-  border-bottom: 1px solid var(--line-soft);
+.product-sample__kicker {
+  color: var(--blue-800);
+  font-size: 0.86rem;
+  font-weight: 650;
 }
 
-.product-sample__item:last-child {
-  border-bottom: 0;
+.product-sample__panel h3 {
+  color: var(--blue-950);
+  font-size: clamp(1.65rem, 2.4vw, 2.15rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
 }
 
-.product-sample__item h3 {
-  margin: 0;
-  font-size: inherit;
-  font-weight: inherit;
-  letter-spacing: inherit;
-  line-height: inherit;
+.product-sample__panel h3 + p {
+  max-width: 38ch;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.product-sample__index {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--line-soft);
 }
 
 .product-sample__trigger {
   display: grid;
-  grid-template-columns: 52px minmax(0, 1fr);
-  gap: 8px;
-  align-items: center;
+  gap: 3px;
   width: 100%;
-  min-height: 58px;
-  padding: 10px 24px;
+  min-height: 64px;
+  padding: 12px 16px;
   color: var(--muted);
   border: 0;
-  background: transparent;
-  box-shadow: inset 3px 0 0 transparent;
-  font: inherit;
+  border-right: 1px solid var(--line-soft);
+  background: white;
   text-align: left;
   cursor: pointer;
 }
 
-.product-sample__item.is-active .product-sample__trigger,
+.product-sample__trigger:last-child {
+  border-right: 0;
+}
+
+.product-sample__trigger.is-active,
 .product-sample__trigger:hover,
 .product-sample__trigger:focus-visible {
   color: var(--blue-950);
-  box-shadow: inset 3px 0 0 var(--accent);
+  box-shadow: inset 0 2px 0 var(--accent);
 }
 
-.product-sample__num {
-  color: var(--accent);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 650;
-  letter-spacing: 0.04em;
-}
-
-.product-sample__name {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
-}
-
-.product-sample__name small {
+.product-sample__brand {
   color: var(--blue-800);
   font-size: 0.75rem;
   font-weight: 650;
 }
 
-.product-sample__name strong {
-  overflow: hidden;
-  font-size: 1.05rem;
+.product-sample__short {
+  font-size: 0.98rem;
   font-weight: 600;
   letter-spacing: -0.02em;
-  line-height: 1.2;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.product-sample__panel {
-  display: none;
-  align-content: start;
-  gap: 8px;
-  min-height: 0;
-  padding: 0 24px 14px 76px;
-}
-
-.product-sample__item.is-active .product-sample__panel {
-  display: grid;
-}
-
-.product-sample__panel p {
-  max-width: 38ch;
-  margin: 0;
-  color: var(--muted);
-  font-size: 1rem;
-  line-height: 1.45;
 }
 
 .product-sample__quote {
@@ -3430,7 +3414,24 @@ html[data-whatsapp-panel='open'] .whatsapp-float {
   }
 
   .site-header__actions {
+    display: flex;
+    height: auto;
+    padding: 0;
+  }
+
+  .site-header__actions button[data-open-quote] {
+    min-height: 38px;
+    padding-inline: 12px;
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  .quote-open__full {
     display: none;
+  }
+
+  .quote-open__short {
+    display: inline;
   }
 
   .site-menu {
@@ -4262,42 +4263,67 @@ html[data-whatsapp-panel='open'] .whatsapp-float {
     display: block;
   }
 
+  .solution-roster,
+  .products .solutions-scale {
+    display: none !important;
+  }
+
+  .services-scale {
+    display: block;
+  }
+
+  .services,
+  .products {
+    overflow-x: clip;
+  }
+
   .product-sample {
     display: flex;
     flex-direction: column;
   }
 
   .product-sample__media {
-    width: 100%;
-    height: 200px;
+    width: min(100%, 280px);
+    height: auto;
     min-height: 0;
+    margin-inline: auto;
   }
 
   .product-sample__media figure {
     padding: 4%;
   }
 
-  .product-sample__list {
+  .product-sample__detail {
     border-top: 1px solid var(--line-soft);
     border-left: 0;
   }
 
-  .product-sample__rows {
-    position: static;
-    overflow: visible;
+  .product-sample__index {
+    order: -1;
   }
 
-  .product-sample__trigger {
-    min-height: 52px;
-    padding: 10px 16px;
-  }
-
-  .product-sample__panel {
-    padding: 0 16px 12px 76px;
+  .product-sample__panel:not([hidden]) {
+    padding: 18px 18px 8px;
   }
 
   .product-sample__quote {
     max-width: none;
+  }
+
+  .product-sample__trigger {
+    min-height: 48px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+
+  .product-sample__trigger.is-active,
+  .product-sample__trigger:hover,
+  .product-sample__trigger:focus-visible {
+    box-shadow: inset 0 -2px 0 var(--accent);
+  }
+
+  .product-sample__brand {
+    display: none;
   }
 }
 
@@ -4311,7 +4337,7 @@ html[data-whatsapp-panel='open'] .whatsapp-float {
   }
 
   .product-sample__media {
-    height: 180px;
+    width: min(100%, 260px);
   }
 
   .brands {

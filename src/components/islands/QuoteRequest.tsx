@@ -6,17 +6,9 @@ import {
   useEffect,
   useRef,
   useState,
-  useSyncExternalStore,
 } from 'react';
 
 import ReactUiIcon from '@components/ui/ReactUiIcon';
-import {
-  clearQuoteItems,
-  getQuotePicks,
-  isQuoted,
-  subscribeQuote,
-  toggleQuoteItem,
-} from '@/lib/quote-selection';
 import { submitNetlifyForm } from '@/lib/netlify-forms';
 
 interface Props {
@@ -38,7 +30,6 @@ export default function QuoteRequest({ whatsappHref }: Props) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<QuoteStep>(1);
   const [submissionStatus, setSubmissionStatus] = useState<SubmissionStatus>('idle');
-  const lines = useSyncExternalStore(subscribeQuote, getQuotePicks, getQuotePicks);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -53,15 +44,7 @@ export default function QuoteRequest({ whatsappHref }: Props) {
         setStep(1);
         setSubmissionStatus('idle');
         setOpen(true);
-        return;
       }
-
-      const productTrigger = target.closest<HTMLButtonElement>('[data-quote-product]');
-      if (!productTrigger) return;
-      const id = productTrigger.dataset.quoteProduct;
-      const title = productTrigger.dataset.productTitle;
-      if (!id || !title) return;
-      toggleQuoteItem(id, title);
     };
 
     document.addEventListener('click', handleDocumentClick);
@@ -71,16 +54,6 @@ export default function QuoteRequest({ whatsappHref }: Props) {
       dialog?.removeAttribute('data-quote-ready');
     };
   }, []);
-
-  useEffect(() => {
-    document.querySelectorAll<HTMLButtonElement>('[data-quote-product]').forEach((button) => {
-      const selected = Boolean(
-        button.dataset.quoteProduct && isQuoted(button.dataset.quoteProduct),
-      );
-      button.classList.toggle('is-selected', selected);
-      button.setAttribute('aria-pressed', String(selected));
-    });
-  }, [lines]);
 
   useEffect(() => {
     syncDialog(dialogRef.current, open, () => titleRef.current?.focus({ preventScroll: true }));
@@ -141,13 +114,9 @@ export default function QuoteRequest({ whatsappHref }: Props) {
     const requestType = String(form.get('tipo_solicitud') ?? 'Solicitud comercial');
     const message = String(form.get('requerimiento') ?? '');
     const submitter = event.nativeEvent.submitter as HTMLButtonElement | null;
-    const products = lines.length
-      ? lines.map((line) => `- ${line.title}`).join('\n')
-      : 'Sin productos preseleccionados';
-    const body = `${requestType}\n\nNombre: ${name}\nEmpresa: ${company || 'No indicada'}\nCorreo: ${senderEmail || 'No indicado'}\nTeléfono: ${phone || 'No indicado'}\n\nSelección:\n${products}\n\nSolicitud:\n${message}`;
+    const body = `${requestType}\n\nNombre: ${name}\nEmpresa: ${company || 'No indicada'}\nCorreo: ${senderEmail || 'No indicado'}\nTeléfono: ${phone || 'No indicado'}\n\nSolicitud:\n${message}`;
 
     if (submitter?.value === 'email') {
-      form.set('productos_seleccionados', products);
       form.set('pagina', window.location.href);
       form.set('fecha_envio', new Date().toISOString());
       form.set('canal', 'Correo');
@@ -155,7 +124,6 @@ export default function QuoteRequest({ whatsappHref }: Props) {
       try {
         await submitNetlifyForm(FORM_NAME, form);
         element.reset();
-        clearQuoteItems();
         setSubmissionStatus('success');
       } catch {
         setSubmissionStatus('error');
@@ -195,19 +163,6 @@ export default function QuoteRequest({ whatsappHref }: Props) {
         </button>
       </div>
       <div className="quote-dialog__body" data-quote-scroll ref={scrollRef}>
-        {lines.length > 0 ? (
-          <div className="quote-dialog__selection">
-            <h3>Productos seleccionados</h3>
-            <ul>
-              {lines.map((line) => (
-                <li key={line.id}>
-                  <span>{line.title}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-
         <form
           name={FORM_NAME}
           method="POST"
@@ -217,7 +172,6 @@ export default function QuoteRequest({ whatsappHref }: Props) {
           onSubmit={handleSubmit}
         >
           <input type="hidden" name="form-name" value={FORM_NAME} />
-          <input type="hidden" name="productos_seleccionados" value="" />
           <input
             type="hidden"
             name="subject"

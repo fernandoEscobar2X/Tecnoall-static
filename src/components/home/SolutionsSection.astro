@@ -1,5 +1,6 @@
 ---
 import SolutionsRoster from '@components/home/SolutionsRoster';
+import SolutionsScaleCarousel from '@components/home/SolutionsScaleCarousel';
 import { homeContent as c } from '@/content/home';
 import { solutionSlugs } from '@/content/routes';
 import { createResponsiveMedia } from '@lib/responsive-media';
@@ -16,12 +17,13 @@ const items = await Promise.all(
     image: await createResponsiveMedia({
       src: service.image,
       widths: [480, 720, 960, 1280],
-      sizes: '(min-width: 1024px) 640px, 100vw',
+      sizes: '(min-width: 901px) 640px, 72vw',
       alt: service.imageAlt,
       quality: 88,
     }),
   })),
 );
+const slides = items.map(({ tags: _tags, ...slide }) => slide);
 ---
 
 <section id="servicios" class="services" data-section="solutions" aria-labelledby="services-title">
@@ -32,5 +34,9 @@ const items = await Promise.all(
     </div>
 
     <SolutionsRoster items={items} client:visible />
+  </div>
+
+  <div class="services-scale">
+    <SolutionsScaleCarousel slides={slides} client:visible />
   </div>
 </section>
