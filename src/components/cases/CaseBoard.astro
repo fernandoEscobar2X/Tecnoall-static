@@ -9,7 +9,7 @@ interface Props {
 }
 
 const { caseStudy } = Astro.props;
-const scope = caseStudy.homeScope ?? caseStudy.services.join(' · ');
+const scope = caseStudy.homeScope ?? caseStudy.services.join(', ');
 const facts = [caseStudy.location, caseStudy.year, caseStudy.brands.join(', ')];
 ---
 
@@ -27,7 +27,7 @@ const facts = [caseStudy.location, caseStudy.year, caseStudy.brands.join(', ')];
     </span>
     <span class="case-card__body">
       <strong>{caseStudy.title}</strong>
-      <span class="case-card__place">{caseStudy.location} · {caseStudy.year}</span>
+      <span class="case-card__place">{caseStudy.location}, {caseStudy.year}</span>
       <span class="case-card__summary">{caseStudy.summary}</span>
       <span class="case-card__cue">Leer el caso</span>
     </span>

@@ -27,18 +27,6 @@ const { products } = Astro.props;
           <div>
             <p>{product.brand}</p>
             <h3>{product.title}</h3>
-            <button
-              type="button"
-              data-quote-product={product.id}
-              data-product-title={`${product.brand} — ${product.title}`}
-              aria-pressed="false"
-            >
-              <>
-                <span class="quote-add__idle">Agregar a cotización</span>
-                <span class="quote-add__done">Agregada</span>
-                <i aria-hidden="true">+</i>
-              </>
-            </button>
           </div>
         </li>
       ))}

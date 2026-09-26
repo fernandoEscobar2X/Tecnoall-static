@@ -2,7 +2,6 @@
 import CasesPreview from '@components/home/CasesPreview.astro';
 import FinalCtaSection from '@components/home/FinalCtaSection.astro';
 import HeroSection from '@components/home/HeroSection.astro';
-import LocationsSection from '@components/home/LocationsSection.astro';
 import ProductsSection from '@components/home/ProductsSection.astro';
 import SolutionsSection from '@components/home/SolutionsSection.astro';
 import SiteLayout from '@/layouts/SiteLayout.astro';
@@ -17,13 +16,13 @@ const description = c.company.description;
   seo={{
     title,
     description,
-    image: '/og/corporativo.png',
+    image: '/og/corporativo.png?v=20260922',
     imageAlt: 'Proyecto de automatización industrial desarrollado por Tecno All',
     jsonLd: pageSchema({
       name: title,
       description,
       path: '/',
-      image: '/og/corporativo.png',
+      image: '/og/corporativo.png?v=20260922',
       includeLocations: true,
     }),
   }}
@@ -32,6 +31,5 @@ const description = c.company.description;
   <SolutionsSection />
   <ProductsSection />
   <CasesPreview />
-  <LocationsSection />
   <FinalCtaSection />
 </SiteLayout>

@@ -5,7 +5,7 @@ import UiIcon from '@components/ui/UiIcon.astro';
 const mapSources = [c.maps.tijuana, c.maps.mexicali];
 ---
 
-<div class="location-switcher" role="tablist" aria-label="Sedes Tecno All" data-reveal>
+<div class="location-switcher" role="tablist" aria-label="Sedes Tecno All">
   {
     c.trust.locations.map((location, index) => (
       <button
@@ -27,7 +27,7 @@ const mapSources = [c.maps.tijuana, c.maps.mexicali];
   }
 </div>
 
-<div class="location-experience" data-location-experience data-reveal>
+<div class="location-experience" data-location-experience>
   <div class="location-details">
     {
       c.trust.locations.map((location, index) => (

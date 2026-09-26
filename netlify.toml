@@ -11,3 +11,9 @@
   targetPort = 4321
   port = 8888
   publish = "dist"
+
+# /industrias/ se retiró: contenido huérfano sin enlaces ni estilos.
+[[redirects]]
+  from = "/industrias/*"
+  to = "/soluciones/"
+  status = 301

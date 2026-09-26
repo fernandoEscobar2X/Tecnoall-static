@@ -4,30 +4,32 @@ import UiIcon from '@components/ui/UiIcon.astro';
 ---
 
 <section id="escribanos" class="sedes-contact" aria-labelledby="sedes-contact-title">
-  <div class="sedes-contact__head" data-reveal>
+  <div class="sedes-contact__head">
     <h2 id="sedes-contact-title">Dos sedes en Baja California</h2>
-    <div class="location-switcher" role="tablist" aria-label="Sedes Tecno All">
-      {
-        c.trust.locations.map((location, index) => (
-          <button
-            id={`location-tab-${index}`}
-            type="button"
-            role="tab"
-            data-location-trigger={index}
-            aria-selected={index === 0 ? 'true' : 'false'}
-            aria-controls={`location-panel-${index}`}
-            tabindex={index === 0 ? 0 : -1}
-            class:list={{ 'is-active': index === 0 }}
-          >
-            <strong>{location.city}</strong>
-          </button>
-        ))
-      }
-    </div>
   </div>
 
   <div class="sedes-contact__grid" data-location-experience>
-    <div class="sedes-contact__map" data-reveal>
+    <div class="sedes-contact__map">
+      <div class="sedes-contact__map-toolbar">
+        <div class="location-switcher" role="tablist" aria-label="Sedes Tecno All">
+          {
+            c.trust.locations.map((location, index) => (
+              <button
+                id={`location-tab-${index}`}
+                type="button"
+                role="tab"
+                data-location-trigger={index}
+                aria-selected={index === 0 ? 'true' : 'false'}
+                aria-controls={`location-panel-${index}`}
+                tabindex={index === 0 ? 0 : -1}
+                class:list={{ 'is-active': index === 0 }}
+              >
+                <strong>{location.city}</strong>
+              </button>
+            ))
+          }
+        </div>
+      </div>
       <div class="sedes-contact__map-stage">
         {
           c.trust.locations.map((location, index) => (
@@ -59,7 +61,6 @@ import UiIcon from '@components/ui/UiIcon.astro';
           >
             <div class="sedes-contact__sede-id">
               <h3>{location.city}</h3>
-              <p>{location.role}</p>
             </div>
             <address>{location.address}</address>
             <div class="sedes-contact__sede-actions">
@@ -78,7 +79,7 @@ import UiIcon from '@components/ui/UiIcon.astro';
       }
     </div>
 
-    <div class="sedes-contact__card" data-reveal>
+    <div class="sedes-contact__card">
       <h3>Escríbanos</h3>
       <p>
         Comparta el requerimiento de su planta. Le respondemos con una propuesta y el siguiente

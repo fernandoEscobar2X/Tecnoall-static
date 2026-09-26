@@ -1,214 +1,92 @@
 ---
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr';
+import SolutionsScaleCarousel from '@components/home/SolutionsScaleCarousel';
 import { homeContent as c } from '@/content/home';
-import conexionWagoImage from '@assets/tecnoall/home/conexion-wago-221.png';
-import gabineteRittalImage from '@assets/tecnoall/home/gabinete-rittal.png';
-import plcSiemensImage from '@assets/tecnoall/home/plc-siemens-s7-1200.png';
-import { createResponsiveMedia, deferredImagePlaceholder } from '@lib/responsive-media';
+import conexionWagoImage from '@assets/tecnoall/home/conexion-wago-221-transparent.webp';
+import gabineteRittalImage from '@assets/tecnoall/home/gabinete-rittal-transparent.webp';
+import plcSiemensImage from '@assets/tecnoall/home/plc-siemens-s7-1200-transparent.webp';
+import drivesImage from '@assets/tecnoall/home/variadores-siemens-transparent.webp';
+import hmiImage from '@assets/tecnoall/home/hmi-siemens-transparent.webp';
+import automationImage from '@assets/tecnoall/home/automatizacion-wago-transparent.webp';
+import { createResponsiveMedia } from '@lib/responsive-media';
 
-/** Una muestra representativa, no el catálogo completo: menos scroll en el home. */
-const featuredIds = ['product-plc', 'product-connectivity', 'product-enclosures'] as const;
-const sampleShort: Record<(typeof featuredIds)[number], string> = {
-  'product-plc': 'PLC',
-  'product-connectivity': 'Conexión',
-  'product-enclosures': 'Gabinetes',
-};
+/** Seis familias de Siemens, WAGO y Rittal. El carrusel 3D es el único componente de la sección. */
+const featuredIds = [
+  'product-plc',
+  'product-drives',
+  'product-hmi',
+  'product-connectivity',
+  'product-automation',
+  'product-enclosures',
+] as const;
+
 const homeArt = {
-  'product-plc': {
-    image: plcSiemensImage,
-    imageAlt: 'PLC Siemens SIMATIC S7-1200',
-  },
+  'product-drives': { image: drivesImage, imageAlt: 'Variador Siemens SINAMICS' },
+  'product-hmi': { image: hmiImage, imageAlt: 'Paneles HMI Siemens' },
+  'product-automation': { image: automationImage, imageAlt: 'Automatización y E/S WAGO' },
+  'product-plc': { image: plcSiemensImage, imageAlt: 'PLC Siemens SIMATIC S7-1200' },
   'product-connectivity': {
     image: conexionWagoImage,
     imageAlt: 'Conector WAGO 221 de tecnología de conexión',
   },
-  'product-enclosures': {
-    image: gabineteRittalImage,
-    imageAlt: 'Gabinete industrial Rittal',
-  },
+  'product-enclosures': { image: gabineteRittalImage, imageAlt: 'Gabinete industrial Rittal' },
 } as const;
+
 const featured = featuredIds
   .map((id) => {
     const product = c.products.find((item) => item.id === id);
     if (!product) return null;
-    return { ...product, short: sampleShort[id], ...homeArt[id] };
+    const art = id in homeArt ? homeArt[id as keyof typeof homeArt] : null;
+    return {
+      ...product,
+      image: art?.image ?? product.image,
+      imageAlt: art?.imageAlt ?? product.imageAlt,
+    };
   })
-  .filter((product): product is NonNullable<typeof product> => Boolean(product));
-const sampleBrands = [...new Set(featured.map((product) => product.brand))].join(' · ');
-const responsiveMedia = await Promise.all(
-  featured.map((product) =>
-    createResponsiveMedia({
+  .filter((product) => product !== null);
+
+const slides = await Promise.all(
+  featured.map(async (product) => ({
+    id: product.id,
+    index: product.index,
+    title: product.title,
+    shortTitle: product.brand,
+    body: product.body,
+    href: `/productos/?marca=${encodeURIComponent(product.brand)}#${product.id}`,
+    image: await createResponsiveMedia({
       src: product.image,
-      widths: [480, 768, 1024],
-      sizes: '(min-width: 901px) 480px, min(100vw - 40px, 280px)',
+      // Incluye el original para pantallas de alta densidad, sin inventar resolución.
+      widths: [240, 360, 480, 640, 840, 1024, 1260, product.image.width],
+      sizes: '(max-width: 640px) 62vw, (max-width: 857px) 240px, (max-width: 1500px) 28vw, 420px',
       alt: product.imageAlt,
-      quality: 90,
+      quality: 92,
     }),
-  ),
+  })),
 );
 ---
 
 <section id="productos" class="products" data-section="products" aria-labelledby="products-title">
   <div class="site-shell">
-    <header class="section-heading section-heading--products" data-reveal>
+    <header class="section-heading section-heading--products">
       <div>
-        <h2 id="products-title">Encuentre la tecnología para su proyecto</h2>
-        <p>Suministro industrial especializado para control, conexión, energía y protección</p>
-        <p class="products__marks">{sampleBrands}</p>
+        <h2 id="products-title" data-reveal="lines">
+          El equipo que integramos, también a su alcance
+        </h2>
+        <p data-reveal="fade">
+          PLC, variadores, HMI, conexión y gabinetes de Siemens, WAGO y Rittal.
+        </p>
       </div>
-      <a href="/productos/">Ver catálogo completo</a>
+      <a href="/productos/" data-reveal="fade">
+        Ver el catálogo
+        <ArrowRightIcon aria-hidden="true" width={16} height={16} />
+      </a>
     </header>
-
-    <div class="product-sample" data-product-sample>
-      <div class="product-sample__media" aria-live="polite">
-        {
-          featured.map((_, index) => {
-            const media = responsiveMedia[index]!;
-            return (
-              <figure
-                class:list={{ 'is-active': index === 0 }}
-                data-product-sample-media={index}
-                aria-hidden={index === 0 ? 'false' : 'true'}
-              >
-                <img
-                  src={deferredImagePlaceholder}
-                  alt={media.alt}
-                  width={media.width}
-                  height={media.height}
-                  decoding="async"
-                  data-deferred-media
-                  data-media-src={media.src}
-                  data-media-srcset={media.srcSet}
-                  data-media-sizes={media.sizes}
-                  data-media-state="idle"
-                />
-              </figure>
-            );
-          })
-        }
-      </div>
-
-      <div class="product-sample__detail">
-        {
-          featured.map((product, index) => (
-            <div
-              class="product-sample__panel"
-              id={`product-sample-panel-${index}`}
-              role="tabpanel"
-              aria-labelledby={`product-sample-tab-${index}`}
-              data-product-sample-panel={index}
-              hidden={index !== 0}
-            >
-              <p class="product-sample__kicker">{product.brand}</p>
-              <h3>{product.title}</h3>
-              <p>{product.body}</p>
-              <button
-                class="product-sample__quote"
-                type="button"
-                data-quote-product={product.id}
-                data-product-title={`${product.brand} — ${product.title}`}
-                aria-pressed="false"
-              >
-                <span class="quote-add__idle">Agregar a cotización</span>
-                <span class="quote-add__done">Agregada</span>
-                <i aria-hidden="true">+</i>
-              </button>
-            </div>
-          ))
-        }
-
-        <div class="product-sample__index" role="tablist" aria-label="Productos destacados">
-          {
-            featured.map((product, index) => (
-              <button
-                id={`product-sample-tab-${index}`}
-                class:list={['product-sample__trigger', { 'is-active': index === 0 }]}
-                type="button"
-                role="tab"
-                aria-selected={index === 0 ? 'true' : 'false'}
-                aria-controls={`product-sample-panel-${index}`}
-                tabindex={index === 0 ? 0 : -1}
-                data-product-sample-trigger={index}
-              >
-                <span class="product-sample__brand">{product.brand}</span>
-                <span class="product-sample__short">{product.short}</span>
-              </button>
-            ))
-          }
-        </div>
-      </div>
-    </div>
   </div>
+
+  <SolutionsScaleCarousel
+    slides={slides}
+    label="Familias de producto de Tecno All"
+    variant="product"
+    client:idle={{ timeout: 100 }}
+  />
 </section>
-
-<script>
-  import { loadDeferredImage } from '@lib/deferred-media';
-
-  const root = document.querySelector<HTMLElement>('[data-product-sample]');
-  if (root) {
-    const media = [...root.querySelectorAll<HTMLElement>('[data-product-sample-media]')];
-    const triggers = [...root.querySelectorAll<HTMLButtonElement>('[data-product-sample-trigger]')];
-    const panels = [...root.querySelectorAll<HTMLElement>('[data-product-sample-panel]')];
-    let activationRequest = 0;
-
-    const imageFor = (index: string) =>
-      media
-        .find((item) => item.dataset.productSampleMedia === index)
-        ?.querySelector<HTMLImageElement>('[data-deferred-media]') ?? null;
-    const prepare = (index: string) => loadDeferredImage(imageFor(index)).catch(() => undefined);
-
-    const activate = (index: string, moveFocus = false) => {
-      const request = ++activationRequest;
-      triggers.forEach((trigger) => {
-        const active = trigger.dataset.productSampleTrigger === index;
-        trigger.classList.toggle('is-active', active);
-        trigger.setAttribute('aria-selected', String(active));
-        trigger.tabIndex = active ? 0 : -1;
-        if (active && moveFocus) trigger.focus();
-      });
-      panels.forEach((panel) => (panel.hidden = panel.dataset.productSamplePanel !== index));
-      void prepare(index).then(() => {
-        if (request !== activationRequest) return;
-        media.forEach((item) => {
-          const active = item.dataset.productSampleMedia === index;
-          item.classList.toggle('is-active', active);
-          item.setAttribute('aria-hidden', String(!active));
-        });
-      });
-    };
-
-    triggers.forEach((trigger, triggerIndex) => {
-      const index = trigger.dataset.productSampleTrigger ?? '0';
-      const preload = () => void prepare(index);
-      trigger.addEventListener('pointerenter', preload, { passive: true });
-      trigger.addEventListener('pointerdown', preload, { passive: true });
-      trigger.addEventListener('focus', preload);
-      trigger.addEventListener('click', () => activate(index));
-      trigger.addEventListener('keydown', (event) => {
-        let nextIndex = triggerIndex;
-        if (event.key === 'ArrowRight') nextIndex = (triggerIndex + 1) % triggers.length;
-        else if (event.key === 'ArrowLeft')
-          nextIndex = (triggerIndex - 1 + triggers.length) % triggers.length;
-        else if (event.key === 'Home') nextIndex = 0;
-        else if (event.key === 'End') nextIndex = triggers.length - 1;
-        else return;
-        event.preventDefault();
-        activate(String(nextIndex), true);
-      });
-    });
-
-    const firstMedia = media[0];
-    if (firstMedia && 'IntersectionObserver' in window) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          if (!entries.some((entry) => entry.isIntersecting)) return;
-          observer.disconnect();
-          void prepare('0');
-        },
-        { rootMargin: '250px 0px' },
-      );
-      observer.observe(firstMedia);
-    } else {
-      void prepare('0');
-    }
-  }
-</script>

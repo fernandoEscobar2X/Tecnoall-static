@@ -20,3 +20,7 @@ docs/design-direction/
 # Paquetes de recursos sin comprimir. El de tecnoall pesa 847 MB: si entra
 # a un commit, el repositorio queda inflado de forma permanente.
 *.zip
+
+# Local Netlify folder
+.netlify
+deno.lock

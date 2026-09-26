@@ -1,5 +1,6 @@
 ---
 import QRCode from 'qrcode';
+import { getImage } from 'astro:assets';
 import QuoteRequest from '@components/islands/QuoteRequest';
 import WhatsAppLauncher from '@components/islands/WhatsAppLauncher';
 import SeoHead from '@components/seo/SeoHead.astro';
@@ -10,14 +11,24 @@ import { siteConfig } from '@config/site';
 import type { SeoInput } from '@lib/seo/types';
 import '@styles/global.css';
 import '@styles/corporate.css';
-import '@styles/pages.css';
-import '@styles/control-panels.css';
+import interiorStyles from '@styles/pages.css?inline';
+import controlPanelStyles from '@styles/control-panels.css?inline';
+import '@styles/mobile-nav.css';
 
 interface Props {
   seo: SeoInput;
 }
 
 const { seo } = Astro.props;
+const heroWidths = [480, 640, 768, 960, 1280];
+const heroPreload =
+  Astro.url.pathname === '/'
+    ? await Promise.all(
+        heroWidths.map((width) =>
+          getImage({ src: homeContent.hero.art, width, format: 'avif', quality: 65 }),
+        ),
+      )
+    : [];
 const whatsappQrSvg = await QRCode.toString(homeContent.contact.whatsappHref, {
   type: 'svg',
   errorCorrectionLevel: 'M',
@@ -32,12 +43,27 @@ const whatsappQrSvg = await QRCode.toString(homeContent.contact.whatsappHref, {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#fbfcfd" />
+    {
+      heroPreload.length > 0 && (
+        <link
+          rel="preload"
+          as="image"
+          type="image/avif"
+          media="(max-width: 900px)"
+          imagesrcset={heroPreload
+            .map((image, index) => `${image.src} ${heroWidths[index]}w`)
+            .join(', ')}
+          imagesizes="100vw"
+          fetchpriority="high"
+        />
+      )
+    }
     <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link
       rel="preload"
-      href="/fonts/ibm-plex-sans-latin.woff2"
+      href="/fonts/ibm-plex-sans-400-700-latin.woff2"
       as="font"
       type="font/woff2"
       crossorigin
@@ -45,7 +71,7 @@ const whatsappQrSvg = await QRCode.toString(homeContent.contact.whatsappHref, {
     />
     <link
       rel="preload"
-      href="/fonts/ibm-plex-condensed-700-latin.woff2"
+      href="/fonts/ibm-plex-condensed-600-latin.woff2"
       as="font"
       type="font/woff2"
       crossorigin
@@ -56,123 +82,69 @@ const whatsappQrSvg = await QRCode.toString(homeContent.contact.whatsappHref, {
   <body class="corporate-body">
     <a class="corporate-skip" href="#main-content">Saltar al contenido</a>
     <SiteHeader />
+    {Astro.url.pathname !== '/' && <style is:inline set:html={interiorStyles} />}
+    {
+      Astro.url.pathname === '/soluciones/tableros-de-control/' && (
+        <style is:inline set:html={controlPanelStyles} />
+      )
+    }
     <main id="main-content">
       <slot />
     </main>
     <SiteFooter />
-    <QuoteRequest client:load whatsappHref={homeContent.contact.whatsappHref} />
+    <QuoteRequest client:idle={{ timeout: 100 }} whatsappHref={homeContent.contact.whatsappHref} />
     <WhatsAppLauncher client:idle href={homeContent.contact.whatsappHref} qrSvg={whatsappQrSvg} />
 
     <script>
+      // Conserva el primer clic incluso si llega antes de la hidratación del formulario.
+      const quoteDialog = document.querySelector<HTMLDialogElement>('.quote-dialog');
+      let pendingQuote: HTMLElement | null = null;
+      const earlyQuote = (event: MouseEvent) => {
+        const target =
+          event.target instanceof Element
+            ? event.target.closest<HTMLElement>('[data-open-quote]')
+            : null;
+        if (!target || quoteDialog?.dataset.quoteReady === 'true') return;
+        pendingQuote = target;
+      };
+      document.addEventListener('click', earlyQuote);
+      if (quoteDialog) {
+        const ready = new MutationObserver(() => {
+          if (quoteDialog.dataset.quoteReady !== 'true') return;
+          ready.disconnect();
+          document.removeEventListener('click', earlyQuote);
+          pendingQuote?.click();
+          pendingQuote = null;
+        });
+        ready.observe(quoteDialog, { attributes: true, attributeFilter: ['data-quote-ready'] });
+      }
+      // Deja pintar el contenido antes de inicializar las animaciones de desplazamiento.
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      );
+      const { initReveals, ScrollTrigger, startSmoothScroll } = await import('@lib/motion');
+
+      startSmoothScroll();
+      void initReveals();
+
+      // El header se oculta al bajar y reaparece al subir, como siempre. ScrollTrigger lee la
+      // misma posición que Lenis.
       const header = document.querySelector<HTMLElement>('[data-site-header]');
       const mobileMenu = document.querySelector<HTMLElement>('[data-mobile-menu]');
-      const compactQuery = window.matchMedia('(max-width: 1180px)');
-      let lastScrollY = window.scrollY;
-
-      const updateHeader = () => {
-        if (!header) return;
-        const y = window.scrollY;
-        const menuOpen = mobileMenu?.dataset.open === 'true';
-        const compact = compactQuery.matches;
-        const goingDown = y > lastScrollY + 4;
-        const goingUp = y < lastScrollY - 4;
-
-        if (!compact) {
-          header.classList.toggle('is-scrolled', y > 12);
-          header.classList.remove('is-solid');
-
-          if (menuOpen || y < 24) {
-            header.classList.remove('is-hidden');
-          } else if (goingDown && y > 72) {
-            header.classList.add('is-hidden');
-          } else if (goingUp) {
-            header.classList.remove('is-hidden');
-          }
-        } else {
-          header.classList.remove('is-scrolled');
-
-          if (menuOpen || y < 32) {
-            header.classList.remove('is-hidden');
-            header.classList.remove('is-solid');
-          } else if (goingDown && y > 40) {
-            header.classList.add('is-hidden');
-          } else if (goingUp) {
-            header.classList.remove('is-hidden');
-            header.classList.add('is-solid');
-          }
-        }
-
-        lastScrollY = y;
-      };
-
-      updateHeader();
-      window.addEventListener('scroll', updateHeader, { passive: true });
-
-      const revealElements = [...document.querySelectorAll<HTMLElement>('[data-reveal]')];
-      const navigationEntry = performance.getEntriesByType('navigation')[0] as
-        PerformanceNavigationTiming | undefined;
-      const isRestoredNavigation =
-        navigationEntry?.type === 'reload' || navigationEntry?.type === 'back_forward';
-      let revealObserver: IntersectionObserver | undefined;
-
-      const revealAll = () => {
-        revealObserver?.disconnect();
-        revealElements.forEach((element) => {
-          element.classList.remove('reveal-pending');
-          element.classList.add('is-visible');
-        });
-      };
-
-      const revealCurrentViewport = () => {
-        const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
-        revealElements.forEach((element) => {
-          const rect = element.getBoundingClientRect();
-          if (rect.top < viewportHeight * 1.08 && rect.bottom > -40) {
-            element.classList.add('is-visible');
-          }
-        });
-      };
-
-      if (
-        !isRestoredNavigation &&
-        'IntersectionObserver' in window &&
-        !window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      ) {
-        revealCurrentViewport();
-        revealObserver = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (!entry.isIntersecting) return;
-              entry.target.classList.add('is-visible');
-              revealObserver?.unobserve(entry.target);
-            });
+      if (header) {
+        ScrollTrigger.create({
+          start: 0,
+          end: 'max',
+          onUpdate: (self) => {
+            const y = self.scroll();
+            header.classList.toggle('is-scrolled', y > 12);
+            if (mobileMenu?.dataset.open === 'true' || y < 72) header.classList.remove('is-hidden');
+            else if (self.direction === 1) header.classList.add('is-hidden');
+            else header.classList.remove('is-hidden');
           },
-          { rootMargin: '0px 0px 22% 0px', threshold: 0.01 },
-        );
-        revealElements.forEach((element) => {
-          if (!element.classList.contains('is-visible')) {
-            element.classList.add('reveal-pending');
-            revealObserver?.observe(element);
-          }
         });
-      } else {
-        revealAll();
       }
 
-      const syncRestoredViewport = (restored = false) => {
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            updateHeader();
-            if (restored || isRestoredNavigation) {
-              revealAll();
-              return;
-            }
-            revealCurrentViewport();
-          });
-        });
-      };
-      window.addEventListener('pageshow', (event) => syncRestoredViewport(event.persisted));
-      window.addEventListener('load', () => syncRestoredViewport(false), { once: true });
       document.documentElement.dataset.appReady = 'true';
     </script>
   </body>

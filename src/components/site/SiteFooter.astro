@@ -1,18 +1,28 @@
 ---
 import UiIcon from '@components/ui/UiIcon.astro';
+import { getImage } from 'astro:assets';
 import { homeContent as c } from '@/content/home';
+import { storeUrl } from '@config/navigation';
 
 const year = new Date().getFullYear();
+const footerLogo = await getImage({
+  src: c.company.logoOnDark,
+  width: 440,
+  format: 'webp',
+  quality: 95,
+});
 
 const solutionLinks = [
   { label: 'Soluciones', href: '/soluciones/' },
-  { label: 'Casos de éxito', href: '/casos-de-exito/' },
+  { label: 'Productos', href: '/productos/' },
+  ...(storeUrl ? [{ label: 'Tienda en línea', href: storeUrl }] : []),
 ];
 
 const companyLinks = [
+  { label: 'Casos de éxito', href: '/casos-de-exito/' },
   { label: 'Marcas', href: '/marcas/' },
-  { label: 'Productos', href: '/productos/' },
   { label: 'Sobre nosotros', href: '/empresa/' },
+  { label: 'Brochure corporativo', href: c.company.brochureUrl },
 ];
 ---
 
@@ -21,7 +31,14 @@ const companyLinks = [
     <div class="site-footer__identity">
       <div class="site-footer__brand-row">
         <a href="/" aria-label="Tecno All, inicio">
-          <img src={c.company.logo.src} alt="Tecno All" width="220" height="60" />
+          <img
+            src={footerLogo.src}
+            alt="Tecno All"
+            width="220"
+            height="60"
+            loading="lazy"
+            decoding="async"
+          />
         </a>
 
         <div class="site-footer__social" aria-label="Redes sociales">
@@ -59,7 +76,7 @@ const companyLinks = [
     </div>
 
     <nav class="site-footer__nav-group" aria-labelledby="footer-solutions-title">
-      <h2 id="footer-solutions-title" class="site-footer__heading">Capacidades</h2>
+      <h2 id="footer-solutions-title" class="site-footer__heading">Oferta</h2>
       <ul>
         {
           solutionLinks.map((item) => (
@@ -74,7 +91,7 @@ const companyLinks = [
     </nav>
 
     <nav class="site-footer__nav-group" aria-labelledby="footer-company-title">
-      <h2 id="footer-company-title" class="site-footer__heading">Compañía</h2>
+      <h2 id="footer-company-title" class="site-footer__heading">Empresa</h2>
       <ul>
         {
           companyLinks.map((item) => (

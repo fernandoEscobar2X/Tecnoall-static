@@ -6,17 +6,10 @@ import {
   useEffect,
   useRef,
   useState,
-  useSyncExternalStore,
 } from 'react';
 
 import ReactUiIcon from '@components/ui/ReactUiIcon';
-import {
-  clearQuoteItems,
-  getQuotePicks,
-  isQuoted,
-  subscribeQuote,
-  toggleQuoteItem,
-} from '@/lib/quote-selection';
+import { lockScroll } from '@/lib/scroll-lock';
 import { submitNetlifyForm } from '@/lib/netlify-forms';
 
 interface Props {
@@ -38,7 +31,6 @@ export default function QuoteRequest({ whatsappHref }: Props) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<QuoteStep>(1);
   const [submissionStatus, setSubmissionStatus] = useState<SubmissionStatus>('idle');
-  const lines = useSyncExternalStore(subscribeQuote, getQuotePicks, getQuotePicks);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -50,18 +42,16 @@ export default function QuoteRequest({ whatsappHref }: Props) {
       if (quoteTrigger) {
         event.preventDefault();
         openerRef.current = quoteTrigger;
+        // El botón que abre el formulario decide el tipo: data-open-quote="proyecto|suministro".
+        const intent = quoteTrigger.dataset.openQuote;
+        const radio = dialog?.querySelector<HTMLInputElement>(
+          intent === 'suministro' ? '#request-supply' : '#request-project',
+        );
+        if (radio && (intent === 'suministro' || intent === 'proyecto')) radio.checked = true;
         setStep(1);
         setSubmissionStatus('idle');
         setOpen(true);
-        return;
       }
-
-      const productTrigger = target.closest<HTMLButtonElement>('[data-quote-product]');
-      if (!productTrigger) return;
-      const id = productTrigger.dataset.quoteProduct;
-      const title = productTrigger.dataset.productTitle;
-      if (!id || !title) return;
-      toggleQuoteItem(id, title);
     };
 
     document.addEventListener('click', handleDocumentClick);
@@ -73,17 +63,8 @@ export default function QuoteRequest({ whatsappHref }: Props) {
   }, []);
 
   useEffect(() => {
-    document.querySelectorAll<HTMLButtonElement>('[data-quote-product]').forEach((button) => {
-      const selected = Boolean(
-        button.dataset.quoteProduct && isQuoted(button.dataset.quoteProduct),
-      );
-      button.classList.toggle('is-selected', selected);
-      button.setAttribute('aria-pressed', String(selected));
-    });
-  }, [lines]);
-
-  useEffect(() => {
     syncDialog(dialogRef.current, open, () => titleRef.current?.focus({ preventScroll: true }));
+    lockScroll(open);
     if (!open && wasOpenRef.current) {
       requestAnimationFrame(() => openerRef.current?.focus({ preventScroll: true }));
     }
@@ -141,13 +122,9 @@ export default function QuoteRequest({ whatsappHref }: Props) {
     const requestType = String(form.get('tipo_solicitud') ?? 'Solicitud comercial');
     const message = String(form.get('requerimiento') ?? '');
     const submitter = event.nativeEvent.submitter as HTMLButtonElement | null;
-    const products = lines.length
-      ? lines.map((line) => `- ${line.title}`).join('\n')
-      : 'Sin productos preseleccionados';
-    const body = `${requestType}\n\nNombre: ${name}\nEmpresa: ${company || 'No indicada'}\nCorreo: ${senderEmail || 'No indicado'}\nTeléfono: ${phone || 'No indicado'}\n\nSelección:\n${products}\n\nSolicitud:\n${message}`;
+    const body = `${requestType}\n\nNombre: ${name}\nEmpresa: ${company || 'No indicada'}\nCorreo: ${senderEmail || 'No indicado'}\nTeléfono: ${phone || 'No indicado'}\n\nSolicitud:\n${message}`;
 
     if (submitter?.value === 'email') {
-      form.set('productos_seleccionados', products);
       form.set('pagina', window.location.href);
       form.set('fecha_envio', new Date().toISOString());
       form.set('canal', 'Correo');
@@ -155,7 +132,6 @@ export default function QuoteRequest({ whatsappHref }: Props) {
       try {
         await submitNetlifyForm(FORM_NAME, form);
         element.reset();
-        clearQuoteItems();
         setSubmissionStatus('success');
       } catch {
         setSubmissionStatus('error');
@@ -174,6 +150,7 @@ export default function QuoteRequest({ whatsappHref }: Props) {
     <dialog
       className="quote-dialog"
       data-quote-dialog
+      data-lenis-prevent
       aria-labelledby="quote-title"
       ref={dialogRef}
       onCancel={() => setOpen(false)}
@@ -181,8 +158,9 @@ export default function QuoteRequest({ whatsappHref }: Props) {
     >
       <div className="quote-dialog__head">
         <div>
+          <p className="quote-dialog__step-label">Paso {step} de 2</p>
           <h2 id="quote-title" tabIndex={-1} ref={titleRef}>
-            Inicie su solicitud
+            {step === 1 ? 'Inicie su solicitud' : 'Datos de contacto'}
           </h2>
         </div>
         <button
@@ -195,19 +173,6 @@ export default function QuoteRequest({ whatsappHref }: Props) {
         </button>
       </div>
       <div className="quote-dialog__body" data-quote-scroll ref={scrollRef}>
-        {lines.length > 0 ? (
-          <div className="quote-dialog__selection">
-            <h3>Productos seleccionados</h3>
-            <ul>
-              {lines.map((line) => (
-                <li key={line.id}>
-                  <span>{line.title}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-
         <form
           name={FORM_NAME}
           method="POST"
@@ -217,7 +182,6 @@ export default function QuoteRequest({ whatsappHref }: Props) {
           onSubmit={handleSubmit}
         >
           <input type="hidden" name="form-name" value={FORM_NAME} />
-          <input type="hidden" name="productos_seleccionados" value="" />
           <input
             type="hidden"
             name="subject"
@@ -283,7 +247,7 @@ export default function QuoteRequest({ whatsappHref }: Props) {
               />
             </label>
             <button
-              className="action action--primary quote-dialog__next"
+              className="brand-button quote-dialog__next"
               type="button"
               data-quote-next
               onClick={continueToContact}
@@ -297,7 +261,6 @@ export default function QuoteRequest({ whatsappHref }: Props) {
             data-quote-step="2"
             hidden={step !== 2 || submissionStatus === 'success'}
           >
-            <h3 tabIndex={-1}>Datos de contacto</h3>
             <div className="quote-dialog__contact">
               <label>
                 Nombre
@@ -349,26 +312,34 @@ export default function QuoteRequest({ whatsappHref }: Props) {
               <a href="/aviso-de-privacidad/">aviso de privacidad</a>.
             </p>
             <div className="quote-dialog__submit">
-              <button type="button" data-quote-back onClick={() => setStep(1)}>
+              <button
+                className="text-link"
+                type="button"
+                data-quote-back
+                onClick={() => setStep(1)}
+              >
                 Volver
               </button>
-              <button
-                className="action action--primary"
-                type="submit"
-                name="canal"
-                value="whatsapp"
-                disabled={submissionStatus === 'submitting'}
-              >
-                Continuar por WhatsApp
-              </button>
-              <button
-                type="submit"
-                name="canal"
-                value="email"
-                disabled={submissionStatus === 'submitting'}
-              >
-                {submissionStatus === 'submitting' ? 'Enviando…' : 'Enviar solicitud'}
-              </button>
+              <div className="quote-dialog__send">
+                <button
+                  className="text-link"
+                  type="submit"
+                  name="canal"
+                  value="whatsapp"
+                  disabled={submissionStatus === 'submitting'}
+                >
+                  Continuar por WhatsApp
+                </button>
+                <button
+                  className="brand-button"
+                  type="submit"
+                  name="canal"
+                  value="email"
+                  disabled={submissionStatus === 'submitting'}
+                >
+                  {submissionStatus === 'submitting' ? 'Enviando…' : 'Enviar solicitud'}
+                </button>
+              </div>
             </div>
             {submissionStatus === 'error' ? (
               <p className="quote-dialog__error" role="alert">

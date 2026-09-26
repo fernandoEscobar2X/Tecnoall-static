@@ -1,347 +1,47 @@
 ---
+import SolutionsRoster from '@components/home/SolutionsRoster';
 import { homeContent as c } from '@/content/home';
 import { solutionSlugs } from '@/content/routes';
-import { createResponsiveMedia, deferredImagePlaceholder } from '@lib/responsive-media';
+import { createResponsiveMedia } from '@lib/responsive-media';
 
-const firstSolution = c.solutions[0]!;
-const desktopMedia = await Promise.all(
-  c.solutions.map((service) =>
-    createResponsiveMedia({
+const items = await Promise.all(
+  c.solutions.map(async (service) => ({
+    id: service.id,
+    index: service.index,
+    title: service.title,
+    shortTitle: service.shortTitle,
+    body: service.body,
+    href: `/soluciones/${solutionSlugs[service.id]}/`,
+    tags: [...service.tags],
+    image: await createResponsiveMedia({
       src: service.image,
-      widths: [840, 1280, 1880],
-      sizes: '(min-width: 900px) 68vw, 100vw',
+      widths: [480, 720, 960, 1280],
+      sizes: '(min-width: 901px) 640px, 72vw',
       alt: service.imageAlt,
+      quality: 88,
     }),
-  ),
-);
-const mobileMedia = await Promise.all(
-  c.solutions.map((service) =>
-    createResponsiveMedia({
-      src: service.image,
-      widths: [480, 640, 840, 1280],
-      sizes: '100vw',
-      alt: '',
-    }),
-  ),
+  })),
 );
 ---
 
 <section id="servicios" class="services" data-section="solutions" aria-labelledby="services-title">
-  <div class="site-shell services__intro">
-    <h2 id="services-title" data-reveal>{c.solutionsIntro.title}</h2>
-    <p data-reveal>{c.solutionsIntro.body}</p>
-  </div>
-
-  <div class="service-console" data-service-console>
-    <div class="service-console__visual" aria-live="polite">
-      {
-        c.solutions.map((service, index) => {
-          const media = desktopMedia[index]!;
-          return (
-            <figure
-              class:list={{ 'is-active': index === 0 }}
-              data-service-media={index}
-              aria-hidden={index === 0 ? 'false' : 'true'}
-            >
-              <img
-                src={deferredImagePlaceholder}
-                alt={media.alt}
-                width={media.width}
-                height={media.height}
-                decoding="async"
-                data-deferred-media
-                data-media-src={media.src}
-                data-media-srcset={media.srcSet}
-                data-media-sizes={media.sizes}
-                data-media-state="idle"
-              />
-              <figcaption>
-                <strong>{service.shortTitle}</strong>
-              </figcaption>
-            </figure>
-          );
-        })
-      }
+  <div class="site-shell">
+    <div class="services__intro">
+      <h2 id="services-title" data-reveal="lines">{c.solutionsIntro.title}</h2>
+      <p data-reveal="fade">{c.solutionsIntro.body}</p>
     </div>
 
-    <div class="service-console__selector">
-      {
-        c.solutions.map((service, index) => (
-          <article class:list={{ 'is-active': index === 0 }} data-service-chapter={index}>
-            <button
-              class="service-console__trigger"
-              type="button"
-              aria-expanded={index === 0 ? 'true' : 'false'}
-              aria-controls={`service-panel-${index}`}
-              data-service-trigger={index}
-            >
-              <strong>{service.shortTitle}</strong>
-              <i aria-hidden="true" />
-            </button>
-            <div
-              class="service-console__panel"
-              id={`service-panel-${index}`}
-              data-service-panel={index}
-              hidden={index !== 0}
-            >
-              <h3>{service.title}</h3>
-              <p>{service.body}</p>
-              <a href={`/soluciones/${solutionSlugs[service.id]}/`}>Ver solución</a>
-            </div>
-          </article>
-        ))
-      }
-    </div>
-
-    <div class="service-mobile-spotlight" data-service-mobile-spotlight>
-      <article class="service-mobile-spotlight__canvas">
-        <div class="service-mobile-spotlight__media">
-          {
-            c.solutions.map((_, index) => {
-              const media = mobileMedia[index]!;
-              return (
-                <figure
-                  class:list={{ 'is-active': index === 0 }}
-                  data-mobile-spotlight-media={index}
-                  aria-hidden={index === 0 ? 'false' : 'true'}
-                >
-                  <img
-                    src={deferredImagePlaceholder}
-                    alt={media.alt}
-                    width={media.width}
-                    height={media.height}
-                    decoding="async"
-                    aria-hidden="true"
-                    data-deferred-media
-                    data-media-src={media.src}
-                    data-media-srcset={media.srcSet}
-                    data-media-sizes={media.sizes}
-                    data-media-state="idle"
-                  />
-                </figure>
-              );
-            })
-          }
-
-          <div
-            class="service-mobile-spotlight__index"
-            id="service-mobile-index"
-            role="listbox"
-            hidden
-            aria-label="Soluciones"
-            data-mobile-spotlight-index
-          >
-            {
-              c.solutions.map((service, index) => (
-                <button
-                  type="button"
-                  role="option"
-                  class:list={{ 'is-active': index === 0 }}
-                  data-service-mobile-option={index}
-                  data-solution-title={service.title}
-                  data-solution-href={`/soluciones/${solutionSlugs[service.id]}/`}
-                  aria-selected={index === 0 ? 'true' : 'false'}
-                >
-                  {service.title}
-                </button>
-              ))
-            }
-          </div>
-        </div>
-
-        <div class="service-mobile-spotlight__caption">
-          <button
-            class="service-mobile-spotlight__picker"
-            type="button"
-            aria-haspopup="listbox"
-            aria-expanded="false"
-            aria-controls="service-mobile-index"
-            data-mobile-spotlight-picker
-          >
-            <span data-mobile-spotlight-title>{firstSolution.title}</span>
-            <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
-              <path
-                d="M5 7.5L10 12.5L15 7.5"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"></path>
-            </svg>
-          </button>
-          <a
-            class="service-mobile-spotlight__link"
-            href={`/soluciones/${solutionSlugs[firstSolution.id]}/`}
-            data-mobile-spotlight-link
-          >
-            Ver solución
-          </a>
-        </div>
-      </article>
-    </div>
+    <SolutionsRoster items={items} client:visible />
   </div>
 </section>
 
 <script>
-  import { loadDeferredImage } from '@lib/deferred-media';
-
-  const consoleRoot = document.querySelector<HTMLElement>('[data-service-console]');
-  if (consoleRoot) {
-    const chapters = [...consoleRoot.querySelectorAll<HTMLElement>('[data-service-chapter]')];
-    const media = [...consoleRoot.querySelectorAll<HTMLElement>('[data-service-media]')];
-    const triggers = [...consoleRoot.querySelectorAll<HTMLButtonElement>('[data-service-trigger]')];
-    const panels = [...consoleRoot.querySelectorAll<HTMLElement>('[data-service-panel]')];
-    const mobileMedia = [
-      ...consoleRoot.querySelectorAll<HTMLElement>('[data-mobile-spotlight-media]'),
-    ];
-    const mobileOptions = [
-      ...consoleRoot.querySelectorAll<HTMLButtonElement>('[data-service-mobile-option]'),
-    ];
-    const picker = consoleRoot.querySelector<HTMLButtonElement>('[data-mobile-spotlight-picker]');
-    const indexList = consoleRoot.querySelector<HTMLElement>('[data-mobile-spotlight-index]');
-    const titleNode = consoleRoot.querySelector<HTMLElement>('[data-mobile-spotlight-title]');
-    const link = consoleRoot.querySelector<HTMLAnchorElement>('[data-mobile-spotlight-link]');
-    const canvas = consoleRoot.querySelector<HTMLElement>('.service-mobile-spotlight__canvas');
-    const compactMedia = window.matchMedia('(max-width: 900px)');
-    let desktopRequest = 0;
-    let mobileRequest = 0;
-    let desktopActive = '0';
-    let mobileActive = '0';
-
-    const imageFor = (items: HTMLElement[], index: string) =>
-      items
-        .find((item) =>
-          item.matches(`[data-service-media="${index}"], [data-mobile-spotlight-media="${index}"]`),
-        )
-        ?.querySelector<HTMLImageElement>('[data-deferred-media]') ?? null;
-
-    const prepare = (items: HTMLElement[], index: string) =>
-      loadDeferredImage(imageFor(items, index)).catch(() => undefined);
-
-    const swapMedia = (items: HTMLElement[], index: string, attribute: string) => {
-      items.forEach((item) => {
-        const active = item.getAttribute(attribute) === index;
-        item.classList.toggle('is-active', active);
-        item.setAttribute('aria-hidden', String(!active));
-      });
-    };
-
-    const activateDesktop = (index: string) => {
-      desktopActive = index;
-      const request = ++desktopRequest;
-      chapters.forEach((chapter) =>
-        chapter.classList.toggle('is-active', chapter.dataset.serviceChapter === index),
-      );
-      triggers.forEach((trigger) =>
-        trigger.setAttribute('aria-expanded', String(trigger.dataset.serviceTrigger === index)),
-      );
-      panels.forEach((panel) => (panel.hidden = panel.dataset.servicePanel !== index));
-      void prepare(media, index).then(() => {
-        if (request === desktopRequest) swapMedia(media, index, 'data-service-media');
-      });
-    };
-
-    const setIndexOpen = (open: boolean) => {
-      if (!picker || !indexList) return;
-      indexList.hidden = !open;
-      picker.setAttribute('aria-expanded', String(open));
-      picker.classList.toggle('is-open', open);
-      if (open) {
-        const selected =
-          mobileOptions.find((option) => option.getAttribute('aria-selected') === 'true') ??
-          mobileOptions[0];
-        selected?.focus();
-      }
-    };
-
-    const activateMobile = (index: string) => {
-      mobileActive = index;
-      const request = ++mobileRequest;
-      mobileOptions.forEach((option) => {
-        const active = option.dataset.serviceMobileOption === index;
-        option.classList.toggle('is-active', active);
-        option.setAttribute('aria-selected', String(active));
-        if (active) {
-          if (titleNode)
-            titleNode.textContent = option.dataset.solutionTitle ?? titleNode.textContent;
-          if (link && option.dataset.solutionHref) link.href = option.dataset.solutionHref;
-        }
-      });
-      void prepare(mobileMedia, index).then(() => {
-        if (request === mobileRequest) {
-          swapMedia(mobileMedia, index, 'data-mobile-spotlight-media');
-        }
-      });
-    };
-
-    triggers.forEach((trigger) => {
-      const index = trigger.dataset.serviceTrigger ?? '0';
-      const preload = () => void prepare(media, index);
-      trigger.addEventListener('pointerenter', preload, { passive: true });
-      trigger.addEventListener('pointerdown', preload, { passive: true });
-      trigger.addEventListener('focus', preload);
-      trigger.addEventListener('click', () => activateDesktop(index));
-    });
-
-    picker?.addEventListener('click', () => {
-      setIndexOpen(indexList?.hidden !== false);
-    });
-
-    mobileOptions.forEach((option) => {
-      const index = option.dataset.serviceMobileOption ?? '0';
-      const preload = () => void prepare(mobileMedia, index);
-      option.addEventListener('pointerenter', preload, { passive: true });
-      option.addEventListener('pointerdown', preload, { passive: true });
-      option.addEventListener('focus', preload);
-      option.addEventListener('click', () => {
-        activateMobile(index);
-        setIndexOpen(false);
-        picker?.focus();
-      });
-    });
-
-    const loadActiveViewportMedia = () => {
-      if (compactMedia.matches) void prepare(mobileMedia, mobileActive);
-      else void prepare(media, desktopActive);
-    };
-    let viewportMediaStarted = false;
-    let viewportObserver: IntersectionObserver | null = null;
-
-    const observeActiveViewportMedia = () => {
-      if (viewportMediaStarted || !('IntersectionObserver' in window)) {
-        viewportMediaStarted = true;
-        loadActiveViewportMedia();
-        return;
-      }
-      viewportObserver?.disconnect();
-      const target = compactMedia.matches ? mobileMedia[0] : media[0];
-      if (!target) return;
-      viewportObserver = new IntersectionObserver(
-        (entries) => {
-          if (!entries.some((entry) => entry.isIntersecting)) return;
-          viewportMediaStarted = true;
-          viewportObserver?.disconnect();
-          loadActiveViewportMedia();
-        },
-        { rootMargin: '250px 0px' },
-      );
-      viewportObserver.observe(target);
-    };
-
-    observeActiveViewportMedia();
-    compactMedia.addEventListener('change', observeActiveViewportMedia);
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && picker?.getAttribute('aria-expanded') === 'true') {
-        setIndexOpen(false);
-        picker.focus();
-      }
-    });
-
-    document.addEventListener('pointerdown', (event) => {
-      if (picker?.getAttribute('aria-expanded') !== 'true') return;
-      const target = event.target;
-      if (target instanceof Node && canvas?.contains(target)) return;
-      setIndexOpen(false);
-    });
+  // Publica la altura del intro para que la foto de la lista suba a su nivel.
+  const section = document.querySelector<HTMLElement>('#servicios');
+  const intro = section?.querySelector<HTMLElement>('.services__intro');
+  if (section && intro) {
+    const sync = () => section.style.setProperty('--intro-h', `${intro.offsetHeight}px`);
+    new ResizeObserver(sync).observe(intro);
+    sync();
   }
 </script>

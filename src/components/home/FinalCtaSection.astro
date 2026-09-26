@@ -1,30 +1,40 @@
 ---
+import ContactAndLocations, { type Sede } from '@components/home/ContactAndLocations';
 import { homeContent as c } from '@/content/home';
+import { createResponsiveMedia } from '@lib/responsive-media';
+import equipo from '@assets/tecnoall/sesion/tecnicos-rittal-tablero-vertical.webp';
+
+const image = await createResponsiveMedia({
+  src: equipo,
+  widths: [480, 640, 768, 960, 1320],
+  sizes: '(min-width: 1024px) 660px, calc(100vw - 40px)',
+  alt: 'Técnicos de Tecno All revisando un tablero de control',
+  quality: 85,
+});
+
+const maps = [c.maps.tijuana, c.maps.mexicali];
+const sedes: Sede[] = c.trust.locations.map((location, index) => ({
+  city: location.city,
+  role: location.role,
+  address: location.address,
+  phone: location.phone,
+  phoneHref: location.phoneHref,
+  directionsHref: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location.address)}`,
+  mapSrc: maps[index]!,
+}));
 ---
 
-<section id="contacto" class="contact-cta" data-section="final-cta" aria-labelledby="contact-title">
-  <div class="site-shell conversion-panel" data-reveal>
-    <div class="conversion-panel__message">
-      <h2 id="contact-title">Ponga su próximo proyecto en marcha</h2>
-    </div>
-    <div class="conversion-panel__actions">
-      <button class="conversion-panel__primary" type="button" data-open-quote>
-        <span>Solicitar cotización</span>
-      </button>
-      <div class="conversion-panel__secondary">
-        <a href="/productos/">
-          <span>Ver líneas de producto</span>
-        </a>
-        <a
-          href={c.contact.whatsappHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          data-whatsapp-entry
-        >
-          <span>Hablar por WhatsApp</span>
-          <i class="conversion-panel__whatsapp" aria-hidden="true"></i>
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
+<ContactAndLocations
+  client:visible
+  title="Ponga su próximo proyecto en marcha"
+  body={c.finalCta.body}
+  whatsappHref={c.contact.whatsappHref}
+  image={{
+    src: image.src,
+    srcSet: image.srcSet,
+    width: image.width,
+    height: image.height,
+    alt: image.alt,
+  }}
+  sedes={sedes}
+/>

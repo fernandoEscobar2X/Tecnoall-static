@@ -5,7 +5,7 @@ import SiteLayout from '@/layouts/SiteLayout.astro';
 import { homeContent } from '@/content/home';
 import { absoluteUrl } from '@config/site';
 import { itemListSchema, pageSchema } from '@lib/seo/schema';
-import controlImage from '@assets/tecnoall/industria/panel-control.png';
+import controlImage from '@assets/tecnoall/sesion/capacitacion-sala.webp';
 
 const { authorized, additional } = homeContent.brands;
 const title = 'Marcas de automatización y control industrial';
@@ -21,13 +21,13 @@ const brandItems = [...authorized, ...additional].map((brand) => ({
   seo={{
     title,
     description,
-    image: '/og/corporativo.png',
+    image: '/og/corporativo.png?v=20260922',
     imageAlt: 'Ingeniería y automatización industrial de Tecno All',
     jsonLd: pageSchema({
       name: title,
       description,
       path: '/marcas/',
-      image: '/og/corporativo.png',
+      image: '/og/corporativo.png?v=20260922',
       type: 'CollectionPage',
       breadcrumbs: [
         { name: 'Inicio', path: '/' },
@@ -42,7 +42,7 @@ const brandItems = [...authorized, ...additional].map((brand) => ({
     title={homeContent.brandsIntro.title}
     lead={homeContent.brandsIntro.body}
     image={controlImage}
-    imageAlt="Componentes de control industrial en un tablero integrado por Tecno All"
+    imageAlt="Capacitación técnica con fabricantes en las instalaciones de Tecno All"
   >
     <Fragment slot="actions">
       <a class="about-hero__brochure" href="/productos/">Ver catálogo</a>
@@ -51,7 +51,7 @@ const brandItems = [...authorized, ...additional].map((brand) => ({
 
   <section class="brand-decks" aria-labelledby="authorized-title">
     <div class="site-shell brand-decks__grid">
-      <article class="brand-deck" data-reveal>
+      <article class="brand-deck">
         <h2 id="authorized-title">Distribuidores autorizados</h2>
         <p>
           Ingeniería, suministro y respaldo con el mismo equipo. Este es el canal oficial de Tecno
@@ -76,7 +76,7 @@ const brandItems = [...authorized, ...additional].map((brand) => ({
         </ul>
       </article>
 
-      <article class="brand-deck" data-reveal>
+      <article class="brand-deck">
         <h2>Otras marcas</h2>
         <p>
           Entran al proyecto cuando el proceso, el cableado o el equipo que ya hay en planta lo

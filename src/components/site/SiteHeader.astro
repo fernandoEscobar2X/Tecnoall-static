@@ -1,12 +1,20 @@
 ---
+import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
 import { Image } from 'astro:assets';
 import MobileNav from '@components/site/MobileNav.astro';
 import { homeContent } from '@/content/home';
 import { primaryNavigation } from '@config/navigation';
+import productsPreviewImage from '@assets/tecnoall/sesion/tablero-plc-canaleta-vertical.webp';
 
 const currentPath = Astro.url.pathname;
 const isCurrent = (href: string) =>
   currentPath === href || (href !== '/' && currentPath.startsWith(href));
+
+const featureImage = async (src: ImageMetadata) =>
+  (await getImage({ src, width: 560, height: 720, fit: 'cover', format: 'webp', quality: 80 })).src;
+const solutionsFeature = await featureImage(homeContent.solutions[1].image);
+const productsFeature = await featureImage(productsPreviewImage);
 ---
 
 <header class="site-header" data-site-header data-section="header">
@@ -15,26 +23,209 @@ const isCurrent = (href: string) =>
       <span class="site-logo__dark">
         <Image src={homeContent.company.logoDark} alt="" width={220} loading="eager" />
       </span>
-      <span class="site-logo__on-dark">
-        <Image src={homeContent.company.logoOnDark} alt="" width={220} loading="eager" />
-      </span>
     </a>
 
     <nav class="site-nav site-header__island" aria-label="Navegación principal">
       {
-        primaryNavigation.map((item) => (
-          <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
-            {item.label}
-          </a>
-        ))
+        primaryNavigation.map((item) =>
+          item.links || item.columns ? (
+            <div class="site-nav__group">
+              <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+              <div class="mega">
+                {item.links ? (
+                  <div class="mega__panel">
+                    <a class="mega__feature" href={item.href}>
+                      <img src={solutionsFeature} alt="" width="280" height="360" loading="lazy" />
+                      <span>
+                        <strong>{homeContent.solutionsIntro.title}</strong>
+                        <em>Ver soluciones</em>
+                      </span>
+                    </a>
+                    <div class="mega__columns mega__columns--split">
+                      <div>
+                        {item.links.slice(0, 3).map((link) => (
+                          <a href={link.href}>
+                            <strong>{link.label}</strong>
+                            <span>{link.detail}</span>
+                          </a>
+                        ))}
+                      </div>
+                      <div>
+                        {item.links.slice(3).map((link) => (
+                          <a href={link.href}>
+                            <strong>{link.label}</strong>
+                            <span>{link.detail}</span>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div class="mega__panel">
+                    <a class="mega__feature" href={item.href}>
+                      <img src={productsFeature} alt="" width="280" height="360" loading="lazy" />
+                      <span>
+                        <strong>{homeContent.productsIntro.title}</strong>
+                        <em>Ver catálogo</em>
+                      </span>
+                    </a>
+                    <div class="mega__columns">
+                      {item.columns?.map((column) => (
+                        <div>
+                          <a class="mega__brand" href={column.href}>
+                            {column.label}
+                          </a>
+                          {column.links.map((link) => (
+                            <a href={link.href}>
+                              <strong>{link.label}</strong>
+                              <span>{link.detail}</span>
+                            </a>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          ),
+        )
       }
     </nav>
 
     <div class="site-header__end">
       <div class="site-header__actions">
-        <button type="button" data-open-quote>Solicitar cotización</button>
+        <button
+          type="button"
+          class="site-header__store"
+          aria-disabled="true"
+          aria-label="Tienda en línea, próximamente"
+        >
+          Tienda
+        </button>
+        <button type="button" data-open-quote>
+          <span class="quote-open__full">Solicitar cotización</span>
+          <span class="quote-open__short">Cotizar</span>
+        </button>
       </div>
       <MobileNav items={primaryNavigation} />
     </div>
   </div>
 </header>
+
+<script>
+  const desktop = window.matchMedia('(min-width: 1181px)');
+  let initialized = false;
+  const initDesktopNav = async () => {
+    if (!desktop.matches || initialized) return;
+    initialized = true;
+    const { gsap, prefersReducedMotion, ScrollTrigger } = await import('@lib/motion');
+
+    const nav = document.querySelector<HTMLElement>('.site-nav');
+    const groups = nav ? [...nav.querySelectorAll<HTMLElement>('.site-nav__group')] : [];
+    const topLinks = nav
+      ? [...nav.querySelectorAll<HTMLAnchorElement>(':scope > a, :scope > .site-nav__group > a')]
+      : [];
+    const reduce = prefersReducedMotion();
+
+    // Indicador que se desliza entre los elementos del menú siguiendo al cursor.
+    const indicator = document.createElement('span');
+    indicator.className = 'site-nav__indicator';
+    indicator.setAttribute('aria-hidden', 'true');
+    nav?.prepend(indicator);
+
+    const moveTo = (link: HTMLElement | undefined) => {
+      if (!nav || !link) {
+        gsap.to(indicator, { opacity: 0, duration: 0.2 });
+        return;
+      }
+      const navBox = nav.getBoundingClientRect();
+      const box = link.getBoundingClientRect();
+      gsap.to(indicator, {
+        x: box.left - navBox.left,
+        y: box.top - navBox.top,
+        width: box.width,
+        height: box.height,
+        opacity: 1,
+        duration: reduce ? 0 : 0.45,
+        ease: 'expo.out',
+      });
+    };
+
+    const current = topLinks.find((link) => link.getAttribute('aria-current') === 'page');
+    const rest = () => moveTo(current);
+
+    const closeAll = () => {
+      groups.forEach((group) => group.removeAttribute('data-open'));
+    };
+
+    const open = (group: HTMLElement) => {
+      if (group.dataset.open === 'true') return;
+      closeAll();
+      group.dataset.open = 'true';
+      if (reduce) return;
+      const items = group.querySelectorAll('.mega__feature, .mega__columns a');
+      gsap.fromTo(
+        items,
+        { y: 10, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.5, ease: 'expo.out', stagger: 0.025, overwrite: true },
+      );
+    };
+
+    // Al pasar a un elemento sin panel, el panel abierto se cierra.
+    let pointing = false;
+    topLinks.forEach((link) => {
+      const enter = () => {
+        pointing = true;
+        moveTo(link);
+        if (!link.closest('.site-nav__group')) closeAll();
+      };
+      link.addEventListener('pointerenter', enter);
+      link.addEventListener('focus', enter);
+    });
+
+    // Al hacer scroll el header se esconde: panel e indicador vuelven a su estado de reposo.
+    ScrollTrigger.create({
+      start: 0,
+      end: 'max',
+      onUpdate: () => {
+        if (!pointing && !groups.some((group) => group.dataset.open === 'true')) return;
+        pointing = false;
+        closeAll();
+        rest();
+      },
+    });
+
+    groups.forEach((group) => {
+      group.addEventListener('pointerenter', () => open(group));
+      group.addEventListener('focusin', () => open(group));
+    });
+
+    nav?.addEventListener('pointerleave', () => {
+      pointing = false;
+      closeAll();
+      rest();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeAll();
+    });
+
+    requestAnimationFrame(() => {
+      if (current) {
+        gsap.set(indicator, { opacity: 0 });
+        rest();
+      }
+    });
+    document.fonts?.ready.then(rest);
+  };
+  void initDesktopNav();
+  desktop.addEventListener('change', () => {
+    void initDesktopNav();
+  });
+</script>

@@ -1,18 +1,12 @@
 @import 'tailwindcss';
 
+/* Una superfamilia, dos cortes con rol: Plex Sans para leer, Plex Sans Condensed 600
+   solo para titulares. No hay monoespaciada: el sitio no muestra datos que la necesiten. */
 @font-face {
   font-family: 'IBM Plex Sans';
-  src: url('/fonts/ibm-plex-sans-latin.woff2') format('woff2');
+  src: url('/fonts/ibm-plex-sans-400-700-latin.woff2') format('woff2');
   font-style: normal;
-  font-weight: 100 700;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'IBM Plex Sans Condensed';
-  src: url('/fonts/ibm-plex-condensed-500-latin.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 500;
+  font-weight: 400 700;
   font-display: swap;
 }
 
@@ -24,108 +18,224 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: 'IBM Plex Sans Condensed';
-  src: url('/fonts/ibm-plex-condensed-700-latin.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-}
-
-/* Paleta corporativa. No usar hexadecimales sueltos fuera de aquí. */
+/* Paleta. Único lugar del sitio con valores de color escritos a mano. */
 @theme {
-  --font-sans: 'IBM Plex Sans', sans-serif;
-  --font-display: 'IBM Plex Sans Condensed', sans-serif;
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-display: 'IBM Plex Sans Condensed', 'IBM Plex Sans', sans-serif;
 
-  /* Azules corporativos */
+  /* Planta: la parte clara del recorrido. */
+  --color-paper: #fbfcfd;
+  --color-surface: #f1f3f5;
+  --color-ink: #16212c;
+  --color-text: #33404c;
+  --color-muted: #5b6670;
+  --color-mute-soft: #98a3ad;
+  --color-line: #d8dee4;
+  --color-line-strong: #b9c2cb;
+
+  /* Cuarto de control: la parte oscura, desde el caso destacado hasta el footer. */
   --color-deep: #1b3954;
-  --color-deep-900: #1b3954;
-  --color-deep-800: #1a547a;
-  --color-deep-700: #006892;
+  --color-deep-900: #0f2436;
+  --color-deep-800: #16304a;
+  --color-control-ink: #eef3f7;
+  --color-control-text: #c7d3dd;
+  --color-control-muted: #8fa3b5;
+
+  /* Acción: un solo acento. El brillante solo se usa sobre fondo oscuro. */
   --color-brand: #006892;
   --color-brand-bright: #0093d0;
+  --color-deep-700: #006892;
   --color-accent: #006892;
   --color-accent-light: #0093d0;
   --color-whatsapp: #25d366;
   --color-whatsapp-hover: #1fbd5b;
-
-  /* Neutros: el carbón evita que el sitio se sienta todo azul. */
-  --color-ink: #252525;
-  --color-muted: #5c5c5c;
-  --color-mute-soft: #a8a8a8;
-  --color-line: #a8a8a8;
-  --color-surface: #f4f4f4;
-  --color-paper: #ffffff;
 }
 
 :root {
   color-scheme: light;
+
+  /* Roles tipográficos. Todo font-size del sitio usa uno de estos. */
+  --text-display: clamp(2.75rem, 1.55rem + 3.6vw, 4.75rem);
+  --text-h2: clamp(2rem, 1.4rem + 2vw, 3.25rem);
+  --text-h3: clamp(1.5rem, 1.25rem + 0.9vw, 2rem);
+  --text-title: 1.25rem;
+  --text-lead: clamp(1.125rem, 1.06rem + 0.25vw, 1.25rem);
+  --text-body: 1.0625rem;
+  --text-sm: 0.9375rem;
+  --text-xs: 0.8125rem;
+
+  --leading-display: 1;
+  --leading-heading: 1.06;
+  --leading-title: 1.3;
+  --leading-body: 1.6;
+
+  /* Piso de tracking: -0.04em. Condensed ya es estrecha; no se aprieta más. */
+  --tracking-display: -0.025em;
+  --tracking-heading: -0.015em;
+  --tracking-title: -0.01em;
+
+  --measure: 62ch;
+  --line-rgb: 216 222 228;
+  /* Barra del header: casi negro neutro, para que el desenfoque no tiña de azul. */
+  --bar-rgb: 17 22 28;
+
+  /* Forma, compartida con la tienda: controles y fotos a 10px, paneles grandes a 20px,
+     y la píldora solo para los disparadores del menú. */
+  --radius: 10px;
+  --radius-lg: 20px;
+
+  /* Movimiento: la salida siempre más rápida que la entrada. */
+  --dur-feedback: 120ms;
+  --dur-state: 240ms;
+  --dur-enter: 480ms;
+  --dur-authored: 800ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --section-space: clamp(88px, 9vw, 144px);
+
   font-family: var(--font-sans);
-  font-weight: 500;
+  font-weight: 400;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
 
-html {
-  min-height: 100%;
-  scroll-behavior: auto;
-  scroll-padding-top: 76px;
-  background-color: var(--color-paper);
-}
+/* Lenis interpola el scroll; el navegador no debe suavizarlo encima. */
 
-body {
-  margin: 0;
-  min-height: 100%;
-  min-width: 320px;
-  color: var(--color-ink);
-  background-color: var(--color-paper);
-}
+@layer base {
+  html {
+    min-height: 100%;
+    scroll-behavior: auto;
+    scroll-padding-top: 76px;
+    background-color: var(--color-paper);
+  }
 
-body > main {
-  background-color: var(--color-paper);
-}
+  body {
+    margin: 0;
+    min-height: 100%;
+    min-width: 320px;
+    color: var(--color-text);
+    background-color: var(--color-paper);
+  }
 
-h1,
-h2,
-h3 {
-  font-family: 'IBM Plex Sans Condensed', sans-serif;
-  font-synthesis: none;
-}
+  body > main {
+    background-color: var(--color-paper);
+  }
 
-::selection {
-  color: white;
-  background: var(--color-brand);
-}
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-synthesis: none;
+  }
 
-:focus-visible {
-  outline: 3px solid var(--color-accent);
-  outline-offset: 3px;
-}
+  ::selection {
+    color: var(--color-paper);
+    background: var(--color-brand);
+  }
 
-a {
-  text-underline-offset: 0.2em;
-}
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 3px;
+  }
 
-img,
-svg,
-video {
-  display: block;
-  max-width: 100%;
-}
+  a {
+    text-underline-offset: 0.2em;
+  }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  img,
+  svg,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis:not(.lenis-autoToggle).lenis-stopped {
+    overflow: clip;
+  }
+
+  .lenis [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  @media (max-width: 680px) {
+    html {
+      scroll-padding-top: 72px;
+    }
+  }
+
+  .corporate-body h1,
+  .corporate-body h2,
+  .corporate-body h3,
+  .corporate-body p,
+  .corporate-body figure,
+  .corporate-body ul {
+    margin: 0;
+  }
+
+  .corporate-body h1,
+  .corporate-body h2,
+  .corporate-body h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-synthesis: none;
+    font-optical-sizing: auto;
+  }
+
+  .corporate-body ul {
+    padding: 0;
+    list-style: none;
+  }
+
+  .corporate-body button,
+  .corporate-body input,
+  .corporate-body textarea {
+    font: inherit;
+  }
+
+  .corporate-body img,
+  .corporate-body picture {
+    display: block;
   }
 }
 
-@media (max-width: 680px) {
-  html {
-    scroll-padding-top: 72px;
+/* Panel del menú: entra como una tarjeta que se asienta y sale más rápido. */
+@layer components {
+  .mega-panel[data-state='open'] {
+    animation: mega-in var(--dur-state) var(--ease-out);
+  }
+
+  .mega-panel[data-state='closed'] {
+    animation: mega-out var(--dur-feedback) ease-in forwards;
+  }
+
+  @keyframes mega-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px) scale(0.985);
+    }
+  }
+
+  @keyframes mega-out {
+    to {
+      opacity: 0;
+      transform: translateY(-4px) scale(0.99);
+    }
   }
 }

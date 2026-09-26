@@ -10,7 +10,7 @@ export function createSiteConfig(siteUrlInput?: string) {
     siteUrl,
     locale: 'es_MX',
     language: 'es-MX',
-    defaultOgImage: '/og/corporativo.png',
+    defaultOgImage: '/og/corporativo.png?v=20260922',
   } as const;
 }
 
