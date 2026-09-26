@@ -1,5 +1,6 @@
 ---
 import QRCode from 'qrcode';
+import { getImage } from 'astro:assets';
 import QuoteRequest from '@components/islands/QuoteRequest';
 import WhatsAppLauncher from '@components/islands/WhatsAppLauncher';
 import SeoHead from '@components/seo/SeoHead.astro';
@@ -10,8 +11,8 @@ import { siteConfig } from '@config/site';
 import type { SeoInput } from '@lib/seo/types';
 import '@styles/global.css';
 import '@styles/corporate.css';
-import '@styles/pages.css';
-import '@styles/control-panels.css';
+import interiorStyles from '@styles/pages.css?inline';
+import controlPanelStyles from '@styles/control-panels.css?inline';
 import '@styles/mobile-nav.css';
 
 interface Props {
@@ -19,6 +20,15 @@ interface Props {
 }
 
 const { seo } = Astro.props;
+const heroWidths = [480, 640, 768, 960, 1280];
+const heroPreload =
+  Astro.url.pathname === '/'
+    ? await Promise.all(
+        heroWidths.map((width) =>
+          getImage({ src: homeContent.hero.art, width, format: 'avif', quality: 65 }),
+        ),
+      )
+    : [];
 const whatsappQrSvg = await QRCode.toString(homeContent.contact.whatsappHref, {
   type: 'svg',
   errorCorrectionLevel: 'M',
@@ -34,11 +44,26 @@ const whatsappQrSvg = await QRCode.toString(homeContent.contact.whatsappHref, {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#fbfcfd" />
+    {
+      heroPreload.length > 0 && (
+        <link
+          rel="preload"
+          as="image"
+          type="image/avif"
+          media="(max-width: 900px)"
+          imagesrcset={heroPreload
+            .map((image, index) => `${image.src} ${heroWidths[index]}w`)
+            .join(', ')}
+          imagesizes="100vw"
+          fetchpriority="high"
+        />
+      )
+    }
     <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link
       rel="preload"
-      href="/fonts/ibm-plex-sans-latin.woff2"
+      href="/fonts/ibm-plex-sans-400-700-latin.woff2"
       as="font"
       type="font/woff2"
       crossorigin
@@ -57,15 +82,47 @@ const whatsappQrSvg = await QRCode.toString(homeContent.contact.whatsappHref, {
   <body class="corporate-body">
     <a class="corporate-skip" href="#main-content">Saltar al contenido</a>
     <SiteHeader />
+    {Astro.url.pathname !== '/' && <style is:inline set:html={interiorStyles} />}
+    {
+      Astro.url.pathname === '/soluciones/tableros-de-control/' && (
+        <style is:inline set:html={controlPanelStyles} />
+      )
+    }
     <main id="main-content">
       <slot />
     </main>
     <SiteFooter />
-    <QuoteRequest client:load whatsappHref={homeContent.contact.whatsappHref} />
+    <QuoteRequest client:idle={{ timeout: 100 }} whatsappHref={homeContent.contact.whatsappHref} />
     <WhatsAppLauncher client:idle href={homeContent.contact.whatsappHref} qrSvg={whatsappQrSvg} />
 
     <script>
-      import { initReveals, ScrollTrigger, startSmoothScroll } from '@lib/motion';
+      // Conserva el primer clic incluso si llega antes de la hidratación del formulario.
+      const quoteDialog = document.querySelector<HTMLDialogElement>('.quote-dialog');
+      let pendingQuote: HTMLElement | null = null;
+      const earlyQuote = (event: MouseEvent) => {
+        const target =
+          event.target instanceof Element
+            ? event.target.closest<HTMLElement>('[data-open-quote]')
+            : null;
+        if (!target || quoteDialog?.dataset.quoteReady === 'true') return;
+        pendingQuote = target;
+      };
+      document.addEventListener('click', earlyQuote);
+      if (quoteDialog) {
+        const ready = new MutationObserver(() => {
+          if (quoteDialog.dataset.quoteReady !== 'true') return;
+          ready.disconnect();
+          document.removeEventListener('click', earlyQuote);
+          pendingQuote?.click();
+          pendingQuote = null;
+        });
+        ready.observe(quoteDialog, { attributes: true, attributeFilter: ['data-quote-ready'] });
+      }
+      // Deja pintar el contenido antes de inicializar las animaciones de desplazamiento.
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      );
+      const { initReveals, ScrollTrigger, startSmoothScroll } = await import('@lib/motion');
 
       startSmoothScroll();
       void initReveals();

@@ -9,7 +9,7 @@ import {
 } from 'react';
 
 import ReactUiIcon from '@components/ui/ReactUiIcon';
-import { lockScroll } from '@/lib/motion';
+import { lockScroll } from '@/lib/scroll-lock';
 import { submitNetlifyForm } from '@/lib/netlify-forms';
 
 interface Props {

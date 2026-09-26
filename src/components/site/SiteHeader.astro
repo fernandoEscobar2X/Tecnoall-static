@@ -120,102 +120,112 @@ const productsFeature = await featureImage(productsPreviewImage);
 </header>
 
 <script>
-  import { gsap, prefersReducedMotion, ScrollTrigger } from '@lib/motion';
+  const desktop = window.matchMedia('(min-width: 1181px)');
+  let initialized = false;
+  const initDesktopNav = async () => {
+    if (!desktop.matches || initialized) return;
+    initialized = true;
+    const { gsap, prefersReducedMotion, ScrollTrigger } = await import('@lib/motion');
 
-  const nav = document.querySelector<HTMLElement>('.site-nav');
-  const groups = nav ? [...nav.querySelectorAll<HTMLElement>('.site-nav__group')] : [];
-  const topLinks = nav
-    ? [...nav.querySelectorAll<HTMLAnchorElement>(':scope > a, :scope > .site-nav__group > a')]
-    : [];
-  const reduce = prefersReducedMotion();
+    const nav = document.querySelector<HTMLElement>('.site-nav');
+    const groups = nav ? [...nav.querySelectorAll<HTMLElement>('.site-nav__group')] : [];
+    const topLinks = nav
+      ? [...nav.querySelectorAll<HTMLAnchorElement>(':scope > a, :scope > .site-nav__group > a')]
+      : [];
+    const reduce = prefersReducedMotion();
 
-  // Indicador que se desliza entre los elementos del menú siguiendo al cursor.
-  const indicator = document.createElement('span');
-  indicator.className = 'site-nav__indicator';
-  indicator.setAttribute('aria-hidden', 'true');
-  nav?.prepend(indicator);
+    // Indicador que se desliza entre los elementos del menú siguiendo al cursor.
+    const indicator = document.createElement('span');
+    indicator.className = 'site-nav__indicator';
+    indicator.setAttribute('aria-hidden', 'true');
+    nav?.prepend(indicator);
 
-  const moveTo = (link: HTMLElement | undefined) => {
-    if (!nav || !link) {
-      gsap.to(indicator, { opacity: 0, duration: 0.2 });
-      return;
-    }
-    const navBox = nav.getBoundingClientRect();
-    const box = link.getBoundingClientRect();
-    gsap.to(indicator, {
-      x: box.left - navBox.left,
-      y: box.top - navBox.top,
-      width: box.width,
-      height: box.height,
-      opacity: 1,
-      duration: reduce ? 0 : 0.45,
-      ease: 'expo.out',
-    });
-  };
-
-  const current = topLinks.find((link) => link.getAttribute('aria-current') === 'page');
-  const rest = () => moveTo(current);
-
-  const closeAll = () => {
-    groups.forEach((group) => group.removeAttribute('data-open'));
-  };
-
-  const open = (group: HTMLElement) => {
-    if (group.dataset.open === 'true') return;
-    closeAll();
-    group.dataset.open = 'true';
-    if (reduce) return;
-    const items = group.querySelectorAll('.mega__feature, .mega__columns a');
-    gsap.fromTo(
-      items,
-      { y: 10, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.5, ease: 'expo.out', stagger: 0.025, overwrite: true },
-    );
-  };
-
-  // Al pasar a un elemento sin panel, el panel abierto se cierra.
-  let pointing = false;
-  topLinks.forEach((link) => {
-    const enter = () => {
-      pointing = true;
-      moveTo(link);
-      if (!link.closest('.site-nav__group')) closeAll();
+    const moveTo = (link: HTMLElement | undefined) => {
+      if (!nav || !link) {
+        gsap.to(indicator, { opacity: 0, duration: 0.2 });
+        return;
+      }
+      const navBox = nav.getBoundingClientRect();
+      const box = link.getBoundingClientRect();
+      gsap.to(indicator, {
+        x: box.left - navBox.left,
+        y: box.top - navBox.top,
+        width: box.width,
+        height: box.height,
+        opacity: 1,
+        duration: reduce ? 0 : 0.45,
+        ease: 'expo.out',
+      });
     };
-    link.addEventListener('pointerenter', enter);
-    link.addEventListener('focus', enter);
-  });
 
-  // Al hacer scroll el header se esconde: panel e indicador vuelven a su estado de reposo.
-  ScrollTrigger.create({
-    start: 0,
-    end: 'max',
-    onUpdate: () => {
-      if (!pointing && !groups.some((group) => group.dataset.open === 'true')) return;
+    const current = topLinks.find((link) => link.getAttribute('aria-current') === 'page');
+    const rest = () => moveTo(current);
+
+    const closeAll = () => {
+      groups.forEach((group) => group.removeAttribute('data-open'));
+    };
+
+    const open = (group: HTMLElement) => {
+      if (group.dataset.open === 'true') return;
+      closeAll();
+      group.dataset.open = 'true';
+      if (reduce) return;
+      const items = group.querySelectorAll('.mega__feature, .mega__columns a');
+      gsap.fromTo(
+        items,
+        { y: 10, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.5, ease: 'expo.out', stagger: 0.025, overwrite: true },
+      );
+    };
+
+    // Al pasar a un elemento sin panel, el panel abierto se cierra.
+    let pointing = false;
+    topLinks.forEach((link) => {
+      const enter = () => {
+        pointing = true;
+        moveTo(link);
+        if (!link.closest('.site-nav__group')) closeAll();
+      };
+      link.addEventListener('pointerenter', enter);
+      link.addEventListener('focus', enter);
+    });
+
+    // Al hacer scroll el header se esconde: panel e indicador vuelven a su estado de reposo.
+    ScrollTrigger.create({
+      start: 0,
+      end: 'max',
+      onUpdate: () => {
+        if (!pointing && !groups.some((group) => group.dataset.open === 'true')) return;
+        pointing = false;
+        closeAll();
+        rest();
+      },
+    });
+
+    groups.forEach((group) => {
+      group.addEventListener('pointerenter', () => open(group));
+      group.addEventListener('focusin', () => open(group));
+    });
+
+    nav?.addEventListener('pointerleave', () => {
       pointing = false;
       closeAll();
       rest();
-    },
-  });
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeAll();
+    });
 
-  groups.forEach((group) => {
-    group.addEventListener('pointerenter', () => open(group));
-    group.addEventListener('focusin', () => open(group));
+    requestAnimationFrame(() => {
+      if (current) {
+        gsap.set(indicator, { opacity: 0 });
+        rest();
+      }
+    });
+    document.fonts?.ready.then(rest);
+  };
+  void initDesktopNav();
+  desktop.addEventListener('change', () => {
+    void initDesktopNav();
   });
-
-  nav?.addEventListener('pointerleave', () => {
-    pointing = false;
-    closeAll();
-    rest();
-  });
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') closeAll();
-  });
-
-  requestAnimationFrame(() => {
-    if (current) {
-      gsap.set(indicator, { opacity: 0 });
-      rest();
-    }
-  });
-  document.fonts?.ready.then(rest);
 </script>

@@ -25,6 +25,8 @@ export function startSmoothScroll() {
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((time) => lenis?.raf(time * 1000));
   gsap.ticker.lagSmoothing(0);
+  // Un diálogo puede abrirse antes de que termine la carga diferida del motor.
+  if (document.querySelector('dialog[open]')) lenis.stop();
 
   // Diálogos y menús piden bloquear el scroll del documento con este evento.
   document.addEventListener('scroll-lock', (event) => {
@@ -33,8 +35,7 @@ export function startSmoothScroll() {
   });
 }
 
-export const lockScroll = (locked: boolean) =>
-  document.dispatchEvent(new CustomEvent('scroll-lock', { detail: locked }));
+export { lockScroll } from './scroll-lock';
 
 /**
  * Coreografía de entrada para el marcado de Astro:
@@ -53,14 +54,24 @@ export async function initReveals(root: ParentNode = document) {
       type: 'lines',
       mask: 'lines',
       autoSplit: true,
-      onSplit: (split) =>
-        gsap.from(split.lines, {
-          yPercent: 105,
+      onSplit: (split) => {
+        const productHeading = el.matches('.section-heading--products h2');
+        if (productHeading) {
+          // Amplía la máscara para g, p, q y otras descendentes sin mover las líneas.
+          split.masks.forEach((mask) => {
+            const style = (mask as HTMLElement).style;
+            style.paddingBottom = '0.18em';
+            style.marginBottom = '-0.18em';
+          });
+        }
+        return gsap.from(split.lines, {
+          yPercent: productHeading ? 125 : 105,
           duration: 0.9,
           ease: EASE_OUT,
           stagger: 0.08,
           scrollTrigger: { trigger: el, start: 'top 88%', once: true },
-        }),
+        });
+      },
     });
   });
 

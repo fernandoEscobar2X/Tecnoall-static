@@ -1,11 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useGSAP } from '@gsap/react';
 import Autoplay from 'embla-carousel-autoplay';
 import useEmblaCarousel from 'embla-carousel-react';
 import { WheelGesturesPlugin } from 'embla-carousel-wheel-gestures';
-import { gsap } from 'gsap';
-
-gsap.registerPlugin(useGSAP);
 
 export interface SolutionSlide {
   id: string;
@@ -69,7 +65,6 @@ export default function SolutionsScaleCarousel({
   const rootRef = useRef<HTMLDivElement>(null);
   const copyRef = useRef<HTMLDivElement>(null);
   const seenSelection = useRef(false);
-  const isVisibleRef = useRef(false);
   const isPausedRef = useRef(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -77,7 +72,7 @@ export default function SolutionsScaleCarousel({
   const autoplay = useMemo(
     () =>
       Autoplay({
-        delay: 2500,
+        delay: 2200,
         playOnInit: true,
         stopOnInteraction: false,
         stopOnMouseEnter: false,
@@ -113,7 +108,7 @@ export default function SolutionsScaleCarousel({
     if (!emblaApi) return;
     const controller = emblaApi.plugins().autoplay;
     if (!controller) return;
-    // Corre desde que carga la página; solo se detiene bajo el cursor o con "reducir movimiento".
+    // Arranca al cargar, incluso fuera de pantalla; conserva las pausas de interacción.
     if (reducedMotion || isPausedRef.current) controller.stop();
     else controller.play();
   }, [emblaApi, reducedMotion]);
@@ -127,15 +122,6 @@ export default function SolutionsScaleCarousel({
   useEffect(() => {
     const root = rootRef.current;
     if (!root || !emblaApi) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        isVisibleRef.current = Boolean(entry?.isIntersecting);
-        syncAutoplay();
-      },
-      { threshold: 0.4 },
-    );
-    observer.observe(root);
 
     const pause = () => {
       isPausedRef.current = true;
@@ -167,7 +153,6 @@ export default function SolutionsScaleCarousel({
     root.addEventListener('keydown', onKeyDown);
 
     return () => {
-      observer.disconnect();
       root.removeEventListener('pointerenter', pause);
       root.removeEventListener('pointerleave', resume);
       root.removeEventListener('focusin', pause);
@@ -177,89 +162,100 @@ export default function SolutionsScaleCarousel({
     };
   }, [emblaApi, syncAutoplay]);
 
-  useGSAP(
-    () => {
-      if (!emblaApi) return;
+  useEffect(() => {
+    if (!emblaApi) return;
+    const slideNodes = emblaApi.slideNodes();
+    const cards = slideNodes.map((slide) =>
+      slide.querySelector<HTMLElement>('.solutions-scale__card'),
+    );
+    let cardWidth = slideNodes[0]?.offsetWidth ?? 0;
+    let paintSlides = true;
 
-      const tweenSlides = () => {
-        const engine = emblaApi.internalEngine();
-        const scrollProgress = emblaApi.scrollProgress();
-        const snapCount = emblaApi.scrollSnapList().length;
-        const slideNodes = emblaApi.slideNodes();
-        const cardWidth = slideNodes[0]?.offsetWidth ?? 0;
-        if (!cardWidth || !snapCount) return;
-        const gap = Math.max(14, cardWidth * 0.045);
+    const tweenSlides = () => {
+      if (!paintSlides) return;
+      const engine = emblaApi.internalEngine();
+      const scrollProgress = emblaApi.scrollProgress();
+      const snapCount = emblaApi.scrollSnapList().length;
+      if (!cardWidth || !snapCount) return;
+      const gap = Math.max(14, cardWidth * 0.045);
 
-        emblaApi.scrollSnapList().forEach((scrollSnap, snapIndex) => {
-          let diffToTarget = scrollSnap - scrollProgress;
-          const slidesInSnap = engine.slideRegistry[snapIndex] ?? [];
+      emblaApi.scrollSnapList().forEach((scrollSnap, snapIndex) => {
+        let diffToTarget = scrollSnap - scrollProgress;
+        const slidesInSnap = engine.slideRegistry[snapIndex] ?? [];
 
-          slidesInSnap.forEach((slideIndex) => {
-            if (engine.options.loop) {
-              engine.slideLooper.loopPoints.forEach((loopItem) => {
-                const target = loopItem.target();
-                if (slideIndex === loopItem.index && target !== 0) {
-                  const sign = Math.sign(target);
-                  if (sign === -1) diffToTarget = scrollSnap - (1 + scrollProgress);
-                  if (sign === 1) diffToTarget = scrollSnap + (1 - scrollProgress);
-                }
-              });
-            }
-
-            const slidesFromCenter = diffToTarget * snapCount;
-            const distance = Math.abs(slidesFromCenter);
-            const slide = slideNodes[slideIndex];
-            const card = slide?.querySelector<HTMLElement>('.solutions-scale__card');
-            if (!slide || !card) return;
-
-            const offset = centerOffset(distance, cardWidth, gap);
-            slide.style.zIndex = String(Math.round(30 - distance * 6));
-            gsap.set(card, {
-              x: Math.sign(slidesFromCenter) * offset - slidesFromCenter * cardWidth,
-              scale: scaleAt(distance),
-              opacity: opacityAt(distance),
-              transformOrigin: 'center center',
-              force3D: true,
+        slidesInSnap.forEach((slideIndex) => {
+          if (engine.options.loop) {
+            engine.slideLooper.loopPoints.forEach((loopItem) => {
+              const target = loopItem.target();
+              if (slideIndex === loopItem.index && target !== 0) {
+                const sign = Math.sign(target);
+                if (sign === -1) diffToTarget = scrollSnap - (1 + scrollProgress);
+                if (sign === 1) diffToTarget = scrollSnap + (1 - scrollProgress);
+              }
             });
-          });
+          }
+
+          const slidesFromCenter = diffToTarget * snapCount;
+          const distance = Math.abs(slidesFromCenter);
+          const slide = slideNodes[slideIndex];
+          const card = cards[slideIndex];
+          if (!slide || !card) return;
+
+          const offset = centerOffset(distance, cardWidth, gap);
+          slide.style.zIndex = String(Math.round(30 - distance * 6));
+          const x = Math.sign(slidesFromCenter) * offset - slidesFromCenter * cardWidth;
+          card.style.transform = `translate3d(${x}px, 0, 0) scale(${scaleAt(distance)})`;
+          card.style.opacity = String(opacityAt(distance));
+          card.style.transformOrigin = 'center center';
         });
-      };
+      });
+    };
 
-      const selectSlide = () => setSelectedIndex(emblaApi.selectedScrollSnap());
+    const selectSlide = () => setSelectedIndex(emblaApi.selectedScrollSnap());
 
-      let frames = 0;
-      const settle = () => {
-        tweenSlides();
-        const root = rootRef.current;
-        const card = root?.querySelector('.solutions-scale__card');
-        if (!root || !card) return;
-        if (card.getBoundingClientRect().width > 0) {
-          root.classList.add('is-ready');
-          return;
-        }
-        if (frames >= 12) return;
-        frames += 1;
-        requestAnimationFrame(settle);
-      };
+    let frames = 0;
+    const settle = () => {
+      cardWidth = slideNodes[0]?.offsetWidth ?? 0;
+      tweenSlides();
+      const root = rootRef.current;
+      const card = root?.querySelector('.solutions-scale__card');
+      if (!root || !card) return;
+      if (card.getBoundingClientRect().width > 0) {
+        root.classList.add('is-ready');
+        return;
+      }
+      if (frames >= 12) return;
+      frames += 1;
+      requestAnimationFrame(settle);
+    };
 
-      settle();
-      selectSlide();
+    settle();
+    selectSlide();
+    // El autoplay nunca se detiene fuera de pantalla. Solo se omiten escrituras
+    // visuales invisibles, y se aplica la posición actual antes de entrar en vista.
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        paintSlides = Boolean(entry?.isIntersecting);
+        if (paintSlides) tweenSlides();
+      },
+      { rootMargin: '200px' },
+    );
+    if (rootRef.current) observer.observe(rootRef.current);
+    emblaApi
+      .on('reInit', settle)
+      .on('scroll', tweenSlides)
+      .on('select', selectSlide)
+      .on('resize', settle);
+
+    return () => {
+      observer.disconnect();
       emblaApi
-        .on('reInit', settle)
-        .on('scroll', tweenSlides)
-        .on('select', selectSlide)
-        .on('resize', settle);
-
-      return () => {
-        emblaApi
-          .off('reInit', settle)
-          .off('scroll', tweenSlides)
-          .off('select', selectSlide)
-          .off('resize', settle);
-      };
-    },
-    { dependencies: [emblaApi], revertOnUpdate: true, scope: rootRef },
-  );
+        .off('reInit', settle)
+        .off('scroll', tweenSlides)
+        .off('select', selectSlide)
+        .off('resize', settle);
+    };
+  }, [emblaApi]);
 
   useEffect(() => {
     const copy = copyRef.current;
@@ -269,13 +265,23 @@ export default function SolutionsScaleCarousel({
       return;
     }
 
-    const tween = gsap.fromTo(
-      copy.querySelectorAll('[data-caption]'),
-      { autoAlpha: 0 },
-      { autoAlpha: 1, duration: 0.42, stagger: 0.045, ease: 'power2.out', overwrite: 'auto' },
+    const box = copy.getBoundingClientRect();
+    if (box.top >= window.innerHeight || box.bottom <= 0) {
+      // La selección sigue avanzando; evita animar textos que aún no están en pantalla.
+      return;
+    }
+
+    const animations = Array.from(copy.querySelectorAll('[data-caption]'), (caption, index) =>
+      caption.animate([{ opacity: 0 }, { opacity: 1 }], {
+        duration: 420,
+        delay: index * 45,
+        // Equivalente al easing cúbico power2.out que tenía el texto.
+        easing: 'cubic-bezier(0.3333333333, 1, 0.6666666667, 1)',
+        fill: 'both',
+      }),
     );
     return () => {
-      tween.kill();
+      animations.forEach((animation) => animation.cancel());
     };
   }, [reducedMotion, selectedIndex]);
 
@@ -285,7 +291,9 @@ export default function SolutionsScaleCarousel({
   return (
     <div
       ref={rootRef}
-      className={`solutions-scale${variant === 'product' ? ' solutions-scale--product' : ''}`}
+      className={['solutions-scale', variant === 'product' && 'solutions-scale--product']
+        .filter(Boolean)
+        .join(' ')}
       aria-roledescription="carrusel"
       aria-label={label}
     >
@@ -306,7 +314,7 @@ export default function SolutionsScaleCarousel({
                   height={slide.image.height}
                   alt={slide.image.alt}
                   draggable={false}
-                  loading={index < 2 || index === slides.length - 1 ? 'eager' : 'lazy'}
+                  loading="lazy"
                   decoding="async"
                 />
               </div>

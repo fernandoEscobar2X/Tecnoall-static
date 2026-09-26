@@ -6,8 +6,8 @@ import equipo from '@assets/tecnoall/sesion/tecnicos-rittal-tablero-vertical.web
 
 const image = await createResponsiveMedia({
   src: equipo,
-  widths: [640, 960, 1320],
-  sizes: '(min-width: 1024px) 660px, 100vw',
+  widths: [480, 640, 768, 960, 1320],
+  sizes: '(min-width: 1024px) 660px, calc(100vw - 40px)',
   alt: 'Técnicos de Tecno All revisando un tablero de control',
   quality: 85,
 });

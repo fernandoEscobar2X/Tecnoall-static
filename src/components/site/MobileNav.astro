@@ -117,7 +117,7 @@ const isCurrent = (href: string) => currentPath === href;
 </div>
 
 <script>
-  import { lockScroll } from '@lib/motion';
+  import { lockScroll } from '@lib/scroll-lock';
 
   const root = document.querySelector<HTMLElement>('[data-mobile-menu]');
   const toggle = root?.querySelector<HTMLButtonElement>('[data-menu-toggle]');

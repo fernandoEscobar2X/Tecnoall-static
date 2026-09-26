@@ -5,7 +5,7 @@ import { homeContent as c } from '@/content/home';
 
 const hero = c.hero;
 const titleAccent = 'el control de su planta';
-const mobileWidths = [720, 960, 1280] as const;
+const mobileWidths = [480, 640, 768, 960, 1280] as const;
 const desktopWidths = [720, 1080, 1448] as const;
 
 const createSet = async (
@@ -27,7 +27,7 @@ const createSet = async (
   );
 
 const [mobileAvif, mobileWebp, desktopAvif, desktopWebp] = await Promise.all([
-  createSet(mobileWidths, 'avif', 80),
+  createSet(mobileWidths, 'avif', 65),
   createSet(mobileWidths, 'webp', 82),
   createSet(desktopWidths, 'avif', 90),
   createSet(desktopWidths, 'webp', 90),
@@ -64,7 +64,7 @@ if (!fallback) throw new Error('No se pudo preparar la imagen principal');
         height={hero.art.height}
         loading="eager"
         fetchpriority="high"
-        decoding="async"
+        decoding="sync"
       />
     </picture>
   </figure>

@@ -292,6 +292,8 @@ export default function SolutionsRoster({ items }: Props) {
                 height={item.image.height}
                 alt={item.image.alt}
                 draggable={false}
+                loading="lazy"
+                fetchPriority="low"
                 decoding="async"
               />
             </div>

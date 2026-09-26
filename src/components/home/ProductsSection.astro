@@ -2,9 +2,12 @@
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr';
 import SolutionsScaleCarousel from '@components/home/SolutionsScaleCarousel';
 import { homeContent as c } from '@/content/home';
-import conexionWagoImage from '@assets/tecnoall/home/conexion-wago-221.png';
-import gabineteRittalImage from '@assets/tecnoall/home/gabinete-rittal.png';
-import plcSiemensImage from '@assets/tecnoall/home/plc-siemens-s7-1200.png';
+import conexionWagoImage from '@assets/tecnoall/home/conexion-wago-221-transparent.webp';
+import gabineteRittalImage from '@assets/tecnoall/home/gabinete-rittal-transparent.webp';
+import plcSiemensImage from '@assets/tecnoall/home/plc-siemens-s7-1200-transparent.webp';
+import drivesImage from '@assets/tecnoall/home/variadores-siemens-transparent.webp';
+import hmiImage from '@assets/tecnoall/home/hmi-siemens-transparent.webp';
+import automationImage from '@assets/tecnoall/home/automatizacion-wago-transparent.webp';
 import { createResponsiveMedia } from '@lib/responsive-media';
 
 /** Seis familias de Siemens, WAGO y Rittal. El carrusel 3D es el único componente de la sección. */
@@ -18,6 +21,9 @@ const featuredIds = [
 ] as const;
 
 const homeArt = {
+  'product-drives': { image: drivesImage, imageAlt: 'Variador Siemens SINAMICS' },
+  'product-hmi': { image: hmiImage, imageAlt: 'Paneles HMI Siemens' },
+  'product-automation': { image: automationImage, imageAlt: 'Automatización y E/S WAGO' },
   'product-plc': { image: plcSiemensImage, imageAlt: 'PLC Siemens SIMATIC S7-1200' },
   'product-connectivity': {
     image: conexionWagoImage,
@@ -53,7 +59,7 @@ const slides = await Promise.all(
       widths: [240, 360, 480, 640, 840, 1024, 1260, product.image.width],
       sizes: '(max-width: 640px) 62vw, (max-width: 857px) 240px, (max-width: 1500px) 28vw, 420px',
       alt: product.imageAlt,
-      quality: 100,
+      quality: 92,
     }),
   })),
 );
@@ -81,6 +87,6 @@ const slides = await Promise.all(
     slides={slides}
     label="Familias de producto de Tecno All"
     variant="product"
-    client:load
+    client:idle={{ timeout: 100 }}
   />
 </section>

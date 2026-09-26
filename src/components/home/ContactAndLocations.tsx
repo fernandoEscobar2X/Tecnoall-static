@@ -121,6 +121,8 @@ export default function ContactAndLocations({ title, body, whatsappHref, image, 
                   <Tabs.Trigger
                     key={item.city}
                     value={item.city}
+                    id={`home-location-tab-${item.city}`}
+                    aria-controls="home-location-panel"
                     className="relative rounded-[calc(var(--radius)-4px)] px-4 py-2 text-[length:var(--text-sm)] font-medium text-muted transition-colors duration-[var(--dur-state)] data-[state=active]:text-paper"
                   >
                     {item.city === active && (
@@ -136,7 +138,12 @@ export default function ContactAndLocations({ title, body, whatsappHref, image, 
               </Tabs.List>
             </div>
 
-            <div className="relative mx-3 min-h-[300px] flex-1 overflow-hidden rounded-[var(--radius)] bg-line sm:mx-4">
+            <div
+              id="home-location-panel"
+              role="tabpanel"
+              aria-labelledby={`home-location-tab-${active}`}
+              className="relative mx-3 min-h-[300px] flex-1 overflow-hidden rounded-[var(--radius)] bg-line sm:mx-4"
+            >
               {near &&
                 sedes.map((item) => (
                   <iframe
