@@ -5,6 +5,7 @@ import ProductCatalog from '@components/catalog/ProductCatalog.astro';
 import SiteLayout from '@/layouts/SiteLayout.astro';
 import { homeContent as c } from '@/content/home';
 import { pageSchema } from '@lib/seo/schema';
+import almacen from '@assets/tecnoall/sesion/almacen-inventario.webp';
 
 const title = 'Productos de automatización y control';
 const description = c.productsIntro.body;
@@ -33,8 +34,8 @@ const hero = c.solutions[1]!;
   <PageHero
     title="Tecnología para control, conexión y protección"
     lead={description}
-    image={hero.image}
-    imageAlt={hero.imageAlt}
+    image={almacen}
+    imageAlt="Almacén de equipo industrial de Tecno All"
   >
     <Fragment slot="actions">
       <button class="about-hero__brochure" type="button" data-open-quote>
@@ -45,7 +46,7 @@ const hero = c.solutions[1]!;
 
   <section class="page-section" aria-labelledby="catalog-title">
     <div class="site-shell">
-      <header class="section-heading section-heading--products" data-reveal>
+      <header class="section-heading section-heading--products">
         <div>
           <h2 id="catalog-title">{c.productsIntro.title}</h2>
         </div>
@@ -57,7 +58,7 @@ const hero = c.solutions[1]!;
   </section>
 
   <CtaBand
-    tone="paper"
+    tone="deep"
     title="¿No encuentra el componente que necesita?"
     body="Comparta la marca, el número de parte o la aplicación. Tecno All confirma disponibilidad y equivalencias."
   />

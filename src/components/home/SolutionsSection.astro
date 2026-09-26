@@ -1,6 +1,5 @@
 ---
 import SolutionsRoster from '@components/home/SolutionsRoster';
-import SolutionsScaleCarousel from '@components/home/SolutionsScaleCarousel';
 import { homeContent as c } from '@/content/home';
 import { solutionSlugs } from '@/content/routes';
 import { createResponsiveMedia } from '@lib/responsive-media';
@@ -23,20 +22,26 @@ const items = await Promise.all(
     }),
   })),
 );
-const slides = items.map(({ tags: _tags, ...slide }) => slide);
 ---
 
 <section id="servicios" class="services" data-section="solutions" aria-labelledby="services-title">
   <div class="site-shell">
     <div class="services__intro">
-      <h2 id="services-title" data-reveal>{c.solutionsIntro.title}</h2>
-      <p data-reveal>{c.solutionsIntro.body}</p>
+      <h2 id="services-title" data-reveal="lines">{c.solutionsIntro.title}</h2>
+      <p data-reveal="fade">{c.solutionsIntro.body}</p>
     </div>
 
     <SolutionsRoster items={items} client:visible />
   </div>
-
-  <div class="services-scale">
-    <SolutionsScaleCarousel slides={slides} client:visible />
-  </div>
 </section>
+
+<script>
+  // Publica la altura del intro para que la foto de la lista suba a su nivel.
+  const section = document.querySelector<HTMLElement>('#servicios');
+  const intro = section?.querySelector<HTMLElement>('.services__intro');
+  if (section && intro) {
+    const sync = () => section.style.setProperty('--intro-h', `${intro.offsetHeight}px`);
+    new ResizeObserver(sync).observe(intro);
+    sync();
+  }
+</script>

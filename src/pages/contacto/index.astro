@@ -4,9 +4,7 @@ import PageHero from '@components/pages/PageHero.astro';
 import UiIcon from '@components/ui/UiIcon.astro';
 import SiteLayout from '@/layouts/SiteLayout.astro';
 import { homeContent as c } from '@/content/home';
-import { getCaseCover } from '@/content/cases';
-
-const projectCover = getCaseCover('cosechadora-exportadora-sal');
+import tecnicosRittal from '@assets/tecnoall/sesion/tecnicos-rittal-tablero-vertical.webp';
 ---
 
 <SiteLayout
@@ -20,8 +18,8 @@ const projectCover = getCaseCover('cosechadora-exportadora-sal');
   <PageHero
     title={c.finalCta.title}
     lead={c.finalCta.body}
-    image={projectCover}
-    imageAlt="Proyecto de automatización desarrollado por Tecno All"
+    image={tecnicosRittal}
+    imageAlt="Técnicos revisando un tablero de control en el taller de Tecno All"
     compact
   >
     <Fragment slot="actions">
@@ -33,11 +31,11 @@ const projectCover = getCaseCover('cosechadora-exportadora-sal');
   </PageHero>
 
   <section class="contact-cta" aria-labelledby="routes-title">
-    <div class="site-shell conversion-panel" data-reveal>
+    <div class="site-shell conversion-panel">
       <div class="conversion-panel__message">
         <h2 id="routes-title">¿Por dónde quiere empezar?</h2>
         <p>
-          Elija la vía que corresponda a su requerimiento. Las tres llegan al mismo equipo de
+          Elija la vía que corresponda a su requerimiento. Las cuatro llegan al mismo equipo de
           ingeniería.
         </p>
       </div>
@@ -77,7 +75,7 @@ const projectCover = getCaseCover('cosechadora-exportadora-sal');
 
   <section class="page-section" aria-labelledby="contact-locations-title">
     <div class="site-shell">
-      <header class="section-heading section-heading--locations" data-reveal>
+      <header class="section-heading section-heading--locations">
         <h2 id="contact-locations-title">Dos puntos de atención en Baja California</h2>
         <p>
           Consulte disponibilidad, soporte de ingeniería o el alcance de su próximo proyecto

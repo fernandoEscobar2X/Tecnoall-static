@@ -13,7 +13,7 @@ interface Props {
 const { title, lead, image, imageAlt = '', compact = false } = Astro.props;
 ---
 
-<section class:list={['about-hero', { 'about-hero--compact': compact }]}>
+<section class:list={['about-hero', { 'about-hero--compact': compact }]} data-hero-dark>
   <figure class="about-hero__media" aria-hidden={imageAlt === '' ? 'true' : undefined}>
     <Image
       src={image}

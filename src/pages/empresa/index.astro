@@ -5,11 +5,10 @@ import PageHero from '@components/pages/PageHero.astro';
 import SiteLayout from '@/layouts/SiteLayout.astro';
 import { homeContent as c } from '@/content/home';
 import { pageSchema } from '@lib/seo/schema';
-import heroHmi from '@assets/tecnoall/empresa/hero-hmi-16x9.png';
+import heroHmi from '@assets/tecnoall/sesion/taller-vista-general.webp';
 import mexicaliFacade from '@assets/tecnoall/empresa/mexicali-fachada.webp';
 import tijuanaFacade from '@assets/tecnoall/empresa/tijuana-fachada.webp';
 
-const brandCount = c.brands.authorized.length + c.brands.additional.length;
 const tijuana = c.trust.locations[0];
 const mexicali = c.trust.locations[1];
 const title = 'Tecno All en Tijuana y Mexicali';
@@ -40,7 +39,7 @@ const description = c.company.description;
     title={c.trust.title}
     lead={c.trust.statements[0]}
     image={heroHmi}
-    imageAlt="Tablero de control con pantalla HMI fabricado por Tecno All"
+    imageAlt="Taller de Tecno All en Tijuana"
   >
     <Fragment slot="actions">
       <a
@@ -55,7 +54,7 @@ const description = c.company.description;
   </PageHero>
 
   <section class="about-place" aria-label="Sedes Tecno All">
-    <div class="about-place__grid" data-reveal>
+    <div class="about-place__grid">
       <figure class="about-place__figure">
         <Image
           src={tijuanaFacade}
@@ -65,7 +64,7 @@ const description = c.company.description;
           quality={90}
           format="webp"
         />
-        <figcaption>Sucursal matriz {tijuana.city} — {tijuana.address}</figcaption>
+        <figcaption>{tijuana.city}</figcaption>
       </figure>
       <figure class="about-place__figure">
         <Image
@@ -76,18 +75,9 @@ const description = c.company.description;
           quality={90}
           format="webp"
         />
-        <figcaption>Sucursal {mexicali.city} — {mexicali.address}</figcaption>
+        <figcaption>{mexicali.city}</figcaption>
       </figure>
     </div>
-
-    <p class="about-place__proof" data-reveal>
-      <span>
-        Rittal nos lista entre sus distribuidores autorizados en Baja California — el catálogo cubre {
-          brandCount
-        } marcas industriales.
-      </span>
-      <a href="/marcas/">Ver fabricantes que representamos</a>
-    </p>
   </section>
 
   <SedesContact />

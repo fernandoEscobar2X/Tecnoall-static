@@ -1,9 +1,11 @@
 ---
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr';
 import { getImage } from 'astro:assets';
 import { homeContent as c } from '@/content/home';
 
 const hero = c.hero;
-const mobileWidths = [480, 640] as const;
+const titleAccent = 'el control de su planta';
+const mobileWidths = [720, 960, 1280] as const;
 const desktopWidths = [720, 1080, 1448] as const;
 
 const createSet = async (
@@ -25,8 +27,8 @@ const createSet = async (
   );
 
 const [mobileAvif, mobileWebp, desktopAvif, desktopWebp] = await Promise.all([
-  createSet(mobileWidths, 'avif', 82, true),
-  createSet(mobileWidths, 'webp', 85, true),
+  createSet(mobileWidths, 'avif', 80),
+  createSet(mobileWidths, 'webp', 82),
   createSet(desktopWidths, 'avif', 90),
   createSet(desktopWidths, 'webp', 90),
 ]);
@@ -36,42 +38,17 @@ const fallback = desktopWebp.at(-1);
 if (!fallback) throw new Error('No se pudo preparar la imagen principal');
 ---
 
-<section class="hero-light" data-section="hero" aria-labelledby="hero-title">
-  <div class="hero-light__grid">
-    <div class="hero-light__copy">
-      <h1 id="hero-title">
-        <span class="hero-light__title-desktop">{hero.title}</span>
-        <span class="hero-light__title-mobile">
-          <span>{hero.mobileTitle.primary}</span>
-          <span>{hero.mobileTitle.accent}</span>
-        </span>
-      </h1>
-      <p class="hero-light__lead">
-        <span class="hero-light__lead-desktop">{hero.lead}</span>
-        <span class="hero-light__lead-mobile">{hero.mobileLead}</span>
-      </p>
-
-      <div class="hero-light__actions">
-        <a class="brand-button hero-action" href="/soluciones/">
-          <span>Ver servicios</span>
-        </a>
-        <button class="brand-button brand-button--ghost hero-action" type="button" data-open-quote>
-          <span>Hablar con un asesor</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
+<section class="hero-light" data-section="hero" data-hero-dark aria-labelledby="hero-title">
   <figure class="hero-light__art">
     <picture>
       <source
-        media="(max-width: 900px) and (orientation: portrait)"
+        media="(max-width: 900px)"
         srcset={srcSet(mobileAvif, mobileWidths)}
         sizes="100vw"
         type="image/avif"
       />
       <source
-        media="(max-width: 900px) and (orientation: portrait)"
+        media="(max-width: 900px)"
         srcset={srcSet(mobileWebp, mobileWidths)}
         sizes="100vw"
         type="image/webp"
@@ -91,5 +68,32 @@ if (!fallback) throw new Error('No se pudo preparar la imagen principal');
       />
     </picture>
   </figure>
-  <div class="hero-light__veil" aria-hidden="true"></div>
+
+  <div class="site-shell hero-light__grid">
+    <div class="hero-light__copy">
+      <h1 id="hero-title">
+        {
+          hero.title.endsWith(titleAccent) ? (
+            <>
+              {hero.title.slice(0, -titleAccent.length)}
+              <span class="hero-light__title-accent">{titleAccent}</span>
+            </>
+          ) : (
+            hero.title
+          )
+        }
+      </h1>
+      <p class="hero-light__lead">{hero.lead}</p>
+
+      <div class="hero-light__actions">
+        <button class="brand-button brand-button--on-dark" type="button" data-open-quote="proyecto">
+          Plantear un proyecto
+        </button>
+        <a class="text-link text-link--on-dark" href="/casos-de-exito/">
+          Ver casos
+          <ArrowRightIcon aria-hidden="true" />
+        </a>
+      </div>
+    </div>
+  </div>
 </section>

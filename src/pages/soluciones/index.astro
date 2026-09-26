@@ -8,9 +8,9 @@ import { itemListSchema, pageSchema, serviceSchema } from '@lib/seo/schema';
 import { getCaseStageImage } from '@/content/cases';
 
 import cabinetImage from '@assets/tecnoall/industria/tablero-control.png';
-import serviceImage from '@assets/tecnoall/industria/instalacion-servicios.png';
+import serviceImage from '@assets/tecnoall/casos/desalinizadora/paneles-control.webp';
 import hmiProceso from '@assets/tecnoall/soluciones/plc-scada.jpeg';
-import aboutImage from '@assets/tecnoall/industria/planta-instalacion.png';
+import aboutImage from '@assets/tecnoall/sesion/taller-linea-lentes.webp';
 
 const tallerTablero = getCaseStageImage('linea-lentes-carl-zeiss', 'stage-control-panel');
 const appMovil = getCaseStageImage('acueducto-cespt-tijuana', 'stage-mobile-app');
@@ -93,7 +93,7 @@ const solutionNodes = solutionPages.map((solution) => {
         <div class="sol-sec__media sol-sec__media--wide">
           <Image
             src={serviceImage}
-            alt="Integración de sistemas y líneas industriales por Tecno All"
+            alt="Paneles de control integrados por Tecno All en una planta desalinizadora"
             class="sol-sec__img"
             widths={[720, 1080, 1440]}
             sizes="(max-width: 900px) 100vw, 58vw"
@@ -113,7 +113,7 @@ const solutionNodes = solutionPages.map((solution) => {
             sizes="(max-width: 900px) 100vw, 62vw"
           />
           <span class="sol-sec__caption">
-            Ensamble de tableros NEMA e IEC en taller propio · Tijuana, B.C.
+            Ensamble de tableros NEMA e IEC en nuestro taller de Tijuana.
           </span>
         </div>
 
@@ -155,12 +155,6 @@ const solutionNodes = solutionPages.map((solution) => {
             Desarrollamos lógicas de control en Siemens TIA Portal / STEP 7 y sistemas SCADA WinCC
             para visualización de procesos en tiempo real.
           </p>
-          <div class="sol-tech-tags">
-            <span>Siemens S7-1500 / 1200</span>
-            <span>TIA Portal V18</span>
-            <span>WinCC SCADA</span>
-            <span>PROFINET</span>
-          </div>
           <a href="/soluciones/plc-scada/" class="sol-sec__link sol-sec__link--light">
             <span>Ver soluciones PLC / SCADA</span>
             <svg
@@ -247,7 +241,7 @@ const solutionNodes = solutionPages.map((solution) => {
         <div class="sol-sec__media">
           <Image
             src={aboutImage}
-            alt="Digitalización y conectividad de planta para Industria 4.0"
+            alt="Línea de producción en el taller de Tecno All"
             class="sol-sec__img"
             widths={[640, 960, 1280]}
             sizes="(max-width: 900px) 100vw, 48vw"

@@ -9,6 +9,7 @@ import {
 } from 'react';
 
 import ReactUiIcon from '@components/ui/ReactUiIcon';
+import { lockScroll } from '@/lib/motion';
 import { submitNetlifyForm } from '@/lib/netlify-forms';
 
 interface Props {
@@ -41,6 +42,12 @@ export default function QuoteRequest({ whatsappHref }: Props) {
       if (quoteTrigger) {
         event.preventDefault();
         openerRef.current = quoteTrigger;
+        // El botón que abre el formulario decide el tipo: data-open-quote="proyecto|suministro".
+        const intent = quoteTrigger.dataset.openQuote;
+        const radio = dialog?.querySelector<HTMLInputElement>(
+          intent === 'suministro' ? '#request-supply' : '#request-project',
+        );
+        if (radio && (intent === 'suministro' || intent === 'proyecto')) radio.checked = true;
         setStep(1);
         setSubmissionStatus('idle');
         setOpen(true);
@@ -57,6 +64,7 @@ export default function QuoteRequest({ whatsappHref }: Props) {
 
   useEffect(() => {
     syncDialog(dialogRef.current, open, () => titleRef.current?.focus({ preventScroll: true }));
+    lockScroll(open);
     if (!open && wasOpenRef.current) {
       requestAnimationFrame(() => openerRef.current?.focus({ preventScroll: true }));
     }
@@ -142,6 +150,7 @@ export default function QuoteRequest({ whatsappHref }: Props) {
     <dialog
       className="quote-dialog"
       data-quote-dialog
+      data-lenis-prevent
       aria-labelledby="quote-title"
       ref={dialogRef}
       onCancel={() => setOpen(false)}
@@ -149,8 +158,9 @@ export default function QuoteRequest({ whatsappHref }: Props) {
     >
       <div className="quote-dialog__head">
         <div>
+          <p className="quote-dialog__step-label">Paso {step} de 2</p>
           <h2 id="quote-title" tabIndex={-1} ref={titleRef}>
-            Inicie su solicitud
+            {step === 1 ? 'Inicie su solicitud' : 'Datos de contacto'}
           </h2>
         </div>
         <button
@@ -237,7 +247,7 @@ export default function QuoteRequest({ whatsappHref }: Props) {
               />
             </label>
             <button
-              className="action action--primary quote-dialog__next"
+              className="brand-button quote-dialog__next"
               type="button"
               data-quote-next
               onClick={continueToContact}
@@ -251,7 +261,6 @@ export default function QuoteRequest({ whatsappHref }: Props) {
             data-quote-step="2"
             hidden={step !== 2 || submissionStatus === 'success'}
           >
-            <h3 tabIndex={-1}>Datos de contacto</h3>
             <div className="quote-dialog__contact">
               <label>
                 Nombre
@@ -303,26 +312,34 @@ export default function QuoteRequest({ whatsappHref }: Props) {
               <a href="/aviso-de-privacidad/">aviso de privacidad</a>.
             </p>
             <div className="quote-dialog__submit">
-              <button type="button" data-quote-back onClick={() => setStep(1)}>
+              <button
+                className="text-link"
+                type="button"
+                data-quote-back
+                onClick={() => setStep(1)}
+              >
                 Volver
               </button>
-              <button
-                className="action action--primary"
-                type="submit"
-                name="canal"
-                value="whatsapp"
-                disabled={submissionStatus === 'submitting'}
-              >
-                Continuar por WhatsApp
-              </button>
-              <button
-                type="submit"
-                name="canal"
-                value="email"
-                disabled={submissionStatus === 'submitting'}
-              >
-                {submissionStatus === 'submitting' ? 'Enviando…' : 'Enviar solicitud'}
-              </button>
+              <div className="quote-dialog__send">
+                <button
+                  className="text-link"
+                  type="submit"
+                  name="canal"
+                  value="whatsapp"
+                  disabled={submissionStatus === 'submitting'}
+                >
+                  Continuar por WhatsApp
+                </button>
+                <button
+                  className="brand-button"
+                  type="submit"
+                  name="canal"
+                  value="email"
+                  disabled={submissionStatus === 'submitting'}
+                >
+                  {submissionStatus === 'submitting' ? 'Enviando…' : 'Enviar solicitud'}
+                </button>
+              </div>
             </div>
             {submissionStatus === 'error' ? (
               <p className="quote-dialog__error" role="alert">

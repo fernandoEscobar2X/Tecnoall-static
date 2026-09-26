@@ -39,6 +39,12 @@ export default defineConfig({
         access: 'public',
         default: 'https://www.tecnoall.com.mx',
       }),
+      // Tienda en línea. Vacía = no se muestran enlaces a la tienda.
+      PUBLIC_STORE_URL: envField.string({
+        context: 'client',
+        access: 'public',
+        optional: true,
+      }),
     },
   },
   vite: {

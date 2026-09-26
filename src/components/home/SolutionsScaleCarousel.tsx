@@ -77,8 +77,8 @@ export default function SolutionsScaleCarousel({
   const autoplay = useMemo(
     () =>
       Autoplay({
-        delay: 4000,
-        playOnInit: false,
+        delay: 2500,
+        playOnInit: true,
         stopOnInteraction: false,
         stopOnMouseEnter: false,
         stopOnFocusIn: false,
@@ -113,7 +113,8 @@ export default function SolutionsScaleCarousel({
     if (!emblaApi) return;
     const controller = emblaApi.plugins().autoplay;
     if (!controller) return;
-    if (reducedMotion || !isVisibleRef.current || isPausedRef.current) controller.stop();
+    // Corre desde que carga la página; solo se detiene bajo el cursor o con "reducir movimiento".
+    if (reducedMotion || isPausedRef.current) controller.stop();
     else controller.play();
   }, [emblaApi, reducedMotion]);
 
@@ -226,12 +227,35 @@ export default function SolutionsScaleCarousel({
 
       const selectSlide = () => setSelectedIndex(emblaApi.selectedScrollSnap());
 
-      tweenSlides();
+      let frames = 0;
+      const settle = () => {
+        tweenSlides();
+        const root = rootRef.current;
+        const card = root?.querySelector('.solutions-scale__card');
+        if (!root || !card) return;
+        if (card.getBoundingClientRect().width > 0) {
+          root.classList.add('is-ready');
+          return;
+        }
+        if (frames >= 12) return;
+        frames += 1;
+        requestAnimationFrame(settle);
+      };
+
+      settle();
       selectSlide();
-      emblaApi.on('reInit', tweenSlides).on('scroll', tweenSlides).on('select', selectSlide);
+      emblaApi
+        .on('reInit', settle)
+        .on('scroll', tweenSlides)
+        .on('select', selectSlide)
+        .on('resize', settle);
 
       return () => {
-        emblaApi.off('reInit', tweenSlides).off('scroll', tweenSlides).off('select', selectSlide);
+        emblaApi
+          .off('reInit', settle)
+          .off('scroll', tweenSlides)
+          .off('select', selectSlide)
+          .off('resize', settle);
       };
     },
     { dependencies: [emblaApi], revertOnUpdate: true, scope: rootRef },
@@ -282,9 +306,7 @@ export default function SolutionsScaleCarousel({
                   height={slide.image.height}
                   alt={slide.image.alt}
                   draggable={false}
-                  loading={
-                    index === 0 || index === 1 || index === slides.length - 1 ? 'eager' : 'lazy'
-                  }
+                  loading={index < 2 || index === slides.length - 1 ? 'eager' : 'lazy'}
                   decoding="async"
                 />
               </div>
@@ -295,7 +317,6 @@ export default function SolutionsScaleCarousel({
 
       <div className="solutions-scale__copy" ref={copyRef} aria-live="polite">
         <p className="solutions-scale__kicker" data-caption>
-          <span>{selectedSlide.index}</span>
           <span className="visually-hidden">
             {selectedIndex + 1} de {slides.length}.{' '}
           </span>

@@ -8,10 +8,10 @@ const phrase = featured?.homePhrase;
 const shot = featured
   ? await createResponsiveMedia({
       src: featured.image,
-      widths: [480, 720, 960, 1280, 1920],
+      widths: [720, 1080, 1440, 1920],
       sizes: '100vw',
       alt: featured.imageAlt,
-      quality: 90,
+      quality: 85,
     })
   : undefined;
 ---
@@ -19,7 +19,7 @@ const shot = featured
 {
   featured && phrase && shot && (
     <HomeCase
-      client:visible={{ rootMargin: '700px' }}
+      client:visible
       imageSrc={shot.src}
       imageSrcSet={shot.srcSet}
       imageSizes={shot.sizes}
@@ -27,8 +27,8 @@ const shot = featured
       imageHeight={shot.height}
       imageAlt={shot.alt}
       voice={`${featured.year}, ${featured.location}`}
-      openLine={phrase.open}
-      closeLine={phrase.close}
+      title={featured.title}
+      body="Módulo 4 de la planta. Paneles de control, automatización y telemetría entregados en abril de 2019."
       statValue={phrase.statValue}
       statUnit={phrase.statUnit}
       statLabel={phrase.statLabel}

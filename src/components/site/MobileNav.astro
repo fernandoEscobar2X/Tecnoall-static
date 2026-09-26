@@ -1,16 +1,14 @@
 ---
 import UiIcon from '@components/ui/UiIcon.astro';
-
-interface NavigationItem {
-  label: string;
-  href: string;
-}
+import type { NavItem } from '@config/navigation';
+import { storeUrl } from '@config/navigation';
 
 interface Props {
-  items: readonly NavigationItem[];
+  items: readonly NavItem[];
 }
-
 const { items } = Astro.props;
+const currentPath = Astro.url.pathname;
+const isCurrent = (href: string) => currentPath === href;
 ---
 
 <div class="site-menu" data-open="false" data-mobile-menu>
@@ -19,68 +17,155 @@ const { items } = Astro.props;
     type="button"
     aria-expanded="false"
     aria-controls="mobile-navigation-panel"
+    aria-haspopup="dialog"
     aria-label="Abrir menú"
     data-menu-toggle
   >
     <span>Menú</span>
-    <UiIcon name="menuScale" class="site-menu__menu-icon" />
-    <UiIcon name="xmark" class="site-menu__close-icon" />
+    <span class="mobile-header__menu-glyph" aria-hidden="true"><span></span><span></span></span>
   </button>
 
-  <div class="site-menu__panel" id="mobile-navigation-panel" data-menu-panel>
-    <nav class="site-menu__nav" aria-label="Navegación móvil">
-      {
-        items.map((item) => (
-          <a class="site-menu__item" href={item.href}>
-            <span>{item.label}</span>
-          </a>
-        ))
-      }
-    </nav>
-
-    <button class="site-menu__quote" type="button" data-open-quote>
-      <span>
-        <small>¿Tienes un proyecto?</small>
-        <strong>Solicitar cotización</strong>
-      </span>
-    </button>
-
-    <div class="site-menu__footer">
-      <span>Automatización · Control</span>
-      <a href="/empresa/#escribanos">Escríbanos</a>
+  <dialog
+    class="mobile-drawer"
+    id="mobile-navigation-panel"
+    aria-labelledby="mobile-menu-title"
+    data-menu-panel
+    data-lenis-prevent
+  >
+    <div class="mobile-drawer__head">
+      <strong id="mobile-menu-title">Explorar Tecno All</strong>
+      <button class="mobile-drawer__close" type="button" aria-label="Cerrar menú" data-menu-close>
+        <UiIcon name="xmark" />
+      </button>
     </div>
-  </div>
+    <div class="mobile-drawer__scroll">
+      <nav class="mobile-drawer__nav" aria-label="Navegación móvil">
+        <a class="mobile-drawer__item" href="/" aria-current={isCurrent('/') ? 'page' : undefined}
+          >Inicio</a
+        >
+        {
+          items.map((item) =>
+            item.links || item.columns ? (
+              <details class="mobile-drawer__group" name="mobile-navigation">
+                <summary>
+                  {item.label}
+                  <span class="mobile-drawer__chevron" aria-hidden="true" />
+                </summary>
+                <div class="mobile-drawer__links">
+                  <a
+                    class="mobile-drawer__all"
+                    href={item.href}
+                    aria-current={isCurrent(item.href) ? 'page' : undefined}
+                  >
+                    {item.columns ? 'Ver todo el catálogo' : 'Ver todas las soluciones'}
+                  </a>
+                  {item.links?.map((link) => (
+                    <a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined}>
+                      {link.label}
+                    </a>
+                  ))}
+                  {item.columns?.map((column) => (
+                    <div class="mobile-drawer__brand">
+                      <a class="mobile-drawer__brand-title" href={column.href}>
+                        {column.label}
+                      </a>
+                      {column.links.map((link) => (
+                        <a href={link.href}>{link.label}</a>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </details>
+            ) : (
+              <a
+                class="mobile-drawer__item"
+                href={item.href}
+                aria-current={isCurrent(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            ),
+          )
+        }
+        <a class="mobile-drawer__item" href="/empresa/#escribanos">Contacto y sedes</a>
+      </nav>
+      <nav class="mobile-drawer__shortcuts" aria-label="Secciones de inicio">
+        <a href="/#servicios">Servicios</a>
+        <a href="/#productos">Equipo industrial</a>
+        <a href="/#contacto">Hablemos de su proyecto</a>
+      </nav>
+      {
+        storeUrl ? (
+          <a class="mobile-drawer__store" href={storeUrl}>
+            Tienda
+          </a>
+        ) : (
+          <span class="mobile-drawer__store" aria-disabled="true">
+            Tienda · próximamente
+          </span>
+        )
+      }
+      <nav class="mobile-drawer__legal" aria-label="Documentos legales">
+        <a href="/aviso-de-privacidad/">Aviso de privacidad</a>
+        <a href="/terminos-y-condiciones/">Términos y condiciones</a>
+      </nav>
+    </div>
+    <div class="mobile-drawer__actions">
+      <button type="button" data-open-quote>Solicitar cotización</button>
+    </div>
+  </dialog>
 </div>
 
 <script>
+  import { lockScroll } from '@lib/motion';
+
   const root = document.querySelector<HTMLElement>('[data-mobile-menu]');
   const toggle = root?.querySelector<HTMLButtonElement>('[data-menu-toggle]');
-  const panel = root?.querySelector<HTMLElement>('[data-menu-panel]');
-
+  const panel = root?.querySelector<HTMLDialogElement>('[data-menu-panel]');
   if (root && toggle && panel) {
-    const setOpen = (open: boolean) => {
-      root.dataset.open = String(open);
-      toggle.setAttribute('aria-expanded', String(open));
-      toggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
-      document.body.style.overflow = open ? 'hidden' : '';
+    let previousOverflow = '';
+    const releasePage = () => {
+      if (root.dataset.open !== 'true') return;
+      root.dataset.open = 'false';
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = previousOverflow;
+      lockScroll(false);
     };
-
-    toggle.addEventListener('click', () => setOpen(root.dataset.open !== 'true'));
-
+    const closeMenu = () => {
+      if (panel.open) {
+        releasePage();
+        panel.close();
+      }
+    };
+    const openMenu = () => {
+      if (panel.open) return;
+      previousOverflow = document.body.style.overflow;
+      panel.showModal();
+      panel.querySelector<HTMLButtonElement>('[data-menu-close]')?.focus();
+      root.dataset.open = 'true';
+      toggle.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+      lockScroll(true);
+      panel.querySelector<HTMLElement>('.mobile-drawer__scroll')?.scrollTo({ top: 0 });
+    };
+    toggle.addEventListener('click', openMenu);
+    panel.addEventListener('close', releasePage);
     panel.addEventListener('click', (event) => {
-      if ((event.target as Element)?.closest('a, button')) setOpen(false);
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && root.dataset.open === 'true') {
-        setOpen(false);
-        toggle.focus();
+      const target = event.target as Element;
+      if (target.closest('a, [data-menu-close], [data-open-quote]')) closeMenu();
+      if (target === panel) {
+        const box = panel.getBoundingClientRect();
+        if (
+          event.clientX < box.left ||
+          event.clientX > box.right ||
+          event.clientY < box.top ||
+          event.clientY > box.bottom
+        )
+          closeMenu();
       }
     });
-
-    document.addEventListener('pointerdown', (event) => {
-      if (root.dataset.open !== 'true') return;
-      if (!root.contains(event.target as Node)) setOpen(false);
+    window.matchMedia('(min-width: 1181px)').addEventListener('change', (event) => {
+      if (event.matches) closeMenu();
     });
   }
 </script>

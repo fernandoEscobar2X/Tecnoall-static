@@ -13,7 +13,7 @@ const filters = [
 ] as const;
 ---
 
-<div class="product-toolbar" data-reveal>
+<div class="product-toolbar">
   <div class="product-filter-scroll">
     <div
       class="product-filter-rail"
@@ -60,7 +60,7 @@ const filters = [
 <div class="product-gallery" data-product-gallery>
   {
     c.products.map((product) => (
-      <article data-product data-product-brand={product.brand} data-reveal>
+      <article id={product.id} data-product data-product-brand={product.brand}>
         <figure>
           <Image
             src={product.image}
@@ -114,6 +114,9 @@ const filters = [
       positionIndicator(button);
     });
   });
+  const initialBrand = new URLSearchParams(window.location.search).get('marca');
+  const initial = buttons.find((button) => button.dataset.productFilter === initialBrand);
+  if (initial) initial.click();
   requestAnimationFrame(() => positionIndicator());
   document.fonts?.ready.then(() => positionIndicator());
   window.addEventListener('resize', () => positionIndicator(), { passive: true });

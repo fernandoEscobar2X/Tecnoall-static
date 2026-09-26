@@ -80,7 +80,7 @@ export const approvedCaseStudies: readonly CaseStudy[] = [
     productIds: ['product-plc', 'product-hmi', 'product-enclosures'],
     image: desalinationPlantImage,
     imageAlt: 'Módulo de desalinización de agua de mar automatizado por Tecno All',
-    homeScope: 'Paneles de control · Automatización · Telemetría · 500 mil galones por día',
+    homeScope: 'Paneles de control, automatización y telemetría para 500 mil galones por día.',
     homePhrase: {
       open: 'Módulo 4',
       close: 'Planta desalinizadora',
@@ -142,7 +142,7 @@ export const approvedCaseStudies: readonly CaseStudy[] = [
     productIds: ['product-plc', 'product-hmi', 'product-enclosures'],
     image: lentesCoverImage,
     imageAlt: 'Línea de producción de lentes oftálmicas automatizada',
-    homeScope: 'Integración · Paneles de control · Automatización de línea',
+    homeScope: 'Integración de la línea, paneles de control y automatización.',
     stages: [
       {
         id: 'stage-production-area',
@@ -193,14 +193,14 @@ export const approvedCaseStudies: readonly CaseStudy[] = [
     industry: 'Procesos',
     location: 'Baja California',
     year: '2020',
-    status: 'Terminado en marzo de 2020 · 3 máquinas en total',
+    status: 'Terminado en marzo de 2020, con 3 máquinas en total',
     services: ['Automatización', 'Instrumentación', 'HMI'],
     brands: ['Siemens'],
     solutionIds: ['solution-system-integration', 'solution-plc-scada'],
     productIds: ['product-plc', 'product-hmi'],
     image: cosechadoraCoverImage,
     imageAlt: 'Cosechadora de sal automatizada por Tecno All',
-    homeScope: 'Automatización · Instrumentación · HMI · 3 máquinas',
+    homeScope: 'Automatización, instrumentación y HMI en 3 máquinas.',
     stages: [
       {
         id: 'stage-harvester',
@@ -229,9 +229,9 @@ export const approvedCaseStudies: readonly CaseStudy[] = [
   {
     id: 'case-cespt-acueducto',
     slug: 'acueducto-cespt-tijuana',
-    title: 'Telemetría del acueducto Tijuana–Ensenada',
+    title: 'Telemetría del acueducto Tijuana-Ensenada',
     summary:
-      'Sistema de control vía telemetría, aplicación web y aplicación móvil para el acueducto Tijuana–Ensenada',
+      'Sistema de control vía telemetría, aplicación web y aplicación móvil para el acueducto Tijuana-Ensenada',
     industry: 'Procesos',
     location: 'Tijuana, B.C.',
     year: '2020',
@@ -241,9 +241,10 @@ export const approvedCaseStudies: readonly CaseStudy[] = [
     solutionIds: ['solution-cloud-web', 'solution-plc-scada'],
     productIds: ['product-hmi', 'product-automation'],
     image: acueductoCoverImage,
-    imageAlt: 'Estación de bombeo del acueducto Tijuana–Ensenada con telemetría',
+    imageAlt: 'Estación de bombeo del acueducto Tijuana-Ensenada con telemetría',
     externalUrl: 'https://portal-cespt.web.app/',
-    homeScope: 'Telemetría · App web · App móvil · Acueducto Tijuana–Ensenada',
+    homeScope:
+      'Telemetría con aplicación web y aplicación móvil para el acueducto Tijuana-Ensenada.',
     stages: [
       {
         id: 'stage-pumping-station',
@@ -254,7 +255,7 @@ export const approvedCaseStudies: readonly CaseStudy[] = [
         deliverables: ['Telemetría de estaciones', 'Integración al sistema de control'],
         tags: ['Telemetría', 'Bombeo'],
         image: acueductoCoverImage,
-        imageAlt: 'Estación de bombeo del acueducto Tijuana–Ensenada',
+        imageAlt: 'Estación de bombeo del acueducto Tijuana-Ensenada',
       },
       {
         id: 'stage-mobile-app',
@@ -265,7 +266,7 @@ export const approvedCaseStudies: readonly CaseStudy[] = [
         deliverables: ['Aplicación móvil de supervisión', 'Acceso remoto a variables de planta'],
         tags: ['App móvil', 'Telemetría'],
         image: acueductoAppImage,
-        imageAlt: 'Aplicación móvil de supervisión del acueducto Tijuana–Ensenada',
+        imageAlt: 'Aplicación móvil de supervisión del acueducto Tijuana-Ensenada',
       },
     ],
   },
@@ -284,7 +285,7 @@ export const approvedCaseStudies: readonly CaseStudy[] = [
     productIds: ['product-enclosures', 'product-plc', 'product-engineering'],
     image: bombeoTableroImage,
     imageAlt: 'Tablero de control fabricado para PBAR4 en Mexicali',
-    homeScope: 'Tableros CCM · SoftStart · Cajas de automatización · PBAR4',
+    homeScope: 'Tableros CCM, arrancadores suaves y cajas de automatización para PBAR4.',
     stages: [
       {
         id: 'stage-fabricated-panel',
@@ -303,7 +304,7 @@ export const approvedCaseStudies: readonly CaseStudy[] = [
       {
         id: 'stage-render-interior',
         label: 'Ingeniería',
-        title: 'Render de ingeniería — interior del tablero',
+        title: 'Render de ingeniería: interior del tablero',
         summary:
           'Visualización de ingeniería del interior del tablero antes de fabricación e integración en sitio',
         deliverables: ['Diseño eléctrico', 'Distribución interior de componentes'],
@@ -314,7 +315,7 @@ export const approvedCaseStudies: readonly CaseStudy[] = [
       {
         id: 'stage-render-front',
         label: 'Ingeniería',
-        title: 'Render de ingeniería — vista frontal',
+        title: 'Render de ingeniería: vista frontal',
         summary:
           'Visualización de ingeniería de la vista frontal del gabinete de control para PBAR4',
         deliverables: [

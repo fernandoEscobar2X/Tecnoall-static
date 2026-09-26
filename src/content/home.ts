@@ -1,11 +1,12 @@
-import aboutImage from '@assets/tecnoall/industria/planta-instalacion.png';
-import cabinetImage from '@assets/tecnoall/industria/tablero-control.png';
-import controlImage from '@assets/tecnoall/industria/panel-control.png';
-import heroImage from '@assets/tecnoall/industria/conectividad-industrial.png';
-import serviceImage from '@assets/tecnoall/industria/instalacion-servicios.png';
-import { getCaseCover } from './cases';
+import cabinetImage from '@assets/tecnoall/sesion/tablero-plc-alambrado.webp';
+import { getCaseCover, getCaseStageImage } from './cases';
 // Assets exactos de la demo aprobada.
 const heroProject = getCaseCover('linea-lentes-carl-zeiss');
+// Soluciones ilustradas solo con evidencia real de proyectos (sin fotos de stock).
+const serviceImage = getCaseStageImage('planta-desalinizadora', 'stage-control-panels');
+const controlImage = getCaseStageImage('planta-desalinizadora', 'stage-automation');
+const heroImage = getCaseCover('acueducto-cespt-tijuana');
+const aboutImage = getCaseStageImage('linea-lentes-carl-zeiss', 'stage-machinery');
 import carloControlsImage from '@assets/tecnoall/productos-controles-carlos-gavazzi.jpg';
 import carloSensorsImage from '@assets/tecnoall/productos-sensores-carlo-gavazzi.jpg';
 import eplanImage from '@assets/tecnoall/productos-ingenieria-tablero-control-automatizacion-eplan.jpg';
@@ -52,19 +53,9 @@ export const homeContent = {
     brochureUrl: '/brochure-tecnoall.pdf',
   },
   hero: {
-    eyebrow: 'AUTOMATIZACIÓN Y CONTROL INDUSTRIAL',
-    title: 'Diseñamos el tablero, integramos el control y suministramos el equipo',
-    mobileTitle: {
-      primary: 'Diseñamos e integramos',
-      accent: 'el control de su planta',
-    },
-    lead: 'Proyectos de automatización para proceso y manufactura, con ingeniería y suministro desde Tijuana y Mexicali.',
-    mobileLead:
-      'Ingeniería, tableros y suministro para plantas de proceso y manufactura, desde Tijuana y Mexicali.',
-    body: 'Ingeniería, fabricación de tableros y suministro para plantas de proceso y manufactura.',
-    primaryCta: { label: 'Solicitar cotización', href: '/empresa/#escribanos' },
-    secondaryCta: { label: 'Explorar productos', href: '/productos/' },
-    /** Foto del hero: evidencia real de proyecto (la misma que mobile). Original 1448×1086. */
+    title: 'Diseñamos e integramos el control de su planta',
+    lead: 'Ingeniería, tableros y suministro para plantas de proceso y manufactura, desde Tijuana y Mexicali.',
+    /** Foto del hero: evidencia real de proyecto. El video de la sesión la sustituirá. */
     art: heroProject,
     artAlt: 'Proyecto de automatización desarrollado por Tecno All',
   },
@@ -81,7 +72,7 @@ export const homeContent = {
       shortTitle: 'Integración',
       body: 'Conectamos maquinaria, sensores y controladores en un sistema que la planta puede operar.',
       image: serviceImage,
-      imageAlt: 'Instalación industrial asociada a los servicios de Tecno All',
+      imageAlt: 'Paneles de control integrados por Tecno All en una planta desalinizadora',
       tags: ['Ingeniería', 'Integración', 'Manufactura'],
     },
     {
@@ -91,7 +82,7 @@ export const homeContent = {
       shortTitle: 'Tableros',
       body: 'Diseño, integración y fabricación del tablero de control en taller propio, listo para sitio.',
       image: cabinetImage,
-      imageAlt: 'Tableros de control fabricados e integrados por Tecno All',
+      imageAlt: 'Tablero de control con PLC Siemens S7-1500 alambrado en el taller de Tecno All',
       tags: ['Diseño', 'Fabricación', 'Control'],
     },
     {
@@ -101,7 +92,7 @@ export const homeContent = {
       shortTitle: 'PLC / SCADA',
       body: 'Actualizamos, convertimos o reparamos PLC y SCADA para ver el proceso en tiempo real.',
       image: controlImage,
-      imageAlt: 'Componentes de control industrial dentro de un tablero',
+      imageAlt: 'Interfaz HMI del proceso de desalinización integrada por Tecno All',
       tags: ['PLC', 'SCADA', 'Servicio'],
     },
     {
@@ -111,7 +102,7 @@ export const homeContent = {
       shortTitle: 'Cloud / Web',
       body: 'Telemetría y pantallas web para supervisar el proceso fuera de planta.',
       image: heroImage,
-      imageAlt: 'Conectividad industrial utilizada para control y visualización',
+      imageAlt: 'Estación de bombeo del acueducto Tijuana-Ensenada supervisada por telemetría',
       tags: ['Telemetría', 'Web', 'Datos'],
     },
     {
@@ -121,7 +112,7 @@ export const homeContent = {
       shortTitle: 'Industria 4.0',
       body: 'Software para digitalizar y conectar planta, producción y datos de proceso.',
       image: aboutImage,
-      imageAlt: 'Visualización industrial digital utilizada por Tecno All',
+      imageAlt: 'Maquinaria de la línea de lentes integrada por Tecno All',
       tags: ['Software', 'Procesos', 'Datos'],
     },
   ],

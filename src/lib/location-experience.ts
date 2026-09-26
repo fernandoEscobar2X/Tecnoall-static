@@ -72,7 +72,22 @@ export const initializeLocationExperiences = () => {
       trigger.addEventListener('pointerenter', prepareMap, { passive: true });
       trigger.addEventListener('pointerdown', prepareMap, { passive: true });
       trigger.addEventListener('focus', prepareMap);
+      trigger.addEventListener('keydown', (event) => {
+        if (!trigger.closest('.sedes-contact')) return;
+        const position = triggers.indexOf(trigger);
+        let next: number;
+        if (event.key === 'ArrowRight') next = (position + 1) % triggers.length;
+        else if (event.key === 'ArrowLeft')
+          next = (position - 1 + triggers.length) % triggers.length;
+        else if (event.key === 'Home') next = 0;
+        else if (event.key === 'End') next = triggers.length - 1;
+        else return;
+        event.preventDefault();
+        triggers[next]?.focus();
+        triggers[next]?.click();
+      });
       trigger.addEventListener('click', () => {
+        if (trigger.getAttribute('aria-selected') === 'true') return;
         prepareMap();
         const selectedIndex = trigger.dataset.locationTrigger ?? '0';
         triggers.forEach((item) => {

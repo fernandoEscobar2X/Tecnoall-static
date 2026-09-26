@@ -7,8 +7,9 @@ import {
 } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-gsap.registerPlugin(useGSAP);
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 export interface SolutionRosterItem {
   id: string;
@@ -32,20 +33,12 @@ interface Props {
   items: SolutionRosterItem[];
 }
 
-function readColor(root: HTMLElement, token: string) {
-  const probe = document.createElement('span');
-  probe.style.color = token;
-  root.appendChild(probe);
-  const color = getComputedStyle(probe).color;
-  probe.remove();
-  return color;
-}
-
 export default function SolutionsRoster({ items }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const selectedRef = useRef(0);
   const reducedRef = useRef(false);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const paintedRef = useRef(false);
   const dragRef = useRef({ x: 0, y: 0, active: false, locked: false });
   const [selected, setSelected] = useState(0);
   const [hovered, setHovered] = useState<number | null>(null);
@@ -135,24 +128,34 @@ export default function SolutionsRoster({ items }: Props) {
       shots.forEach((el, index) => gsap.set(el, { autoAlpha: index === 0 ? 1 : 0, x: 0 }));
       metas.forEach((el, index) => gsap.set(el, { autoAlpha: index === 0 ? 1 : 0, x: 0 }));
       if (reduced) return;
-      gsap.from(nodes('row'), {
-        autoAlpha: 0,
-        y: 20,
-        duration: 0.4,
-        stagger: 0.06,
-        ease: 'power2.out',
+
+      // Entrada: las filas llegan en orden y la foto se descubre de abajo hacia arriba.
+      const frame = root.querySelector<HTMLElement>('.solution-roster__frame');
+      const intro = gsap.timeline({
+        scrollTrigger: { trigger: root, start: 'top 80%', once: true },
       });
-      if (shots[0])
-        gsap.from(shots[0], { x: 80, autoAlpha: 0, duration: 0.5, ease: 'power2.inOut' });
-      if (metas[0]) {
-        gsap.from(metas[0], {
-          x: 36,
-          autoAlpha: 0,
-          duration: 0.45,
-          ease: 'power2.inOut',
-          delay: 0.05,
-        });
+      intro.from(
+        nodes('row'),
+        { y: 28, autoAlpha: 0, duration: 0.8, ease: 'expo.out', stagger: 0.07 },
+        0,
+      );
+      if (frame) {
+        intro.from(
+          frame,
+          { clipPath: 'inset(16% 0% 0% 0% round 10px)', duration: 1.1, ease: 'expo.out' },
+          0.1,
+        );
+        intro.from(
+          frame.querySelectorAll('img'),
+          { scale: 1.12, duration: 1.4, ease: 'expo.out' },
+          0.1,
+        );
       }
+      intro.from(
+        root.querySelector('.solution-roster__meta'),
+        { y: 20, autoAlpha: 0, duration: 0.8, ease: 'expo.out' },
+        0.35,
+      );
     },
     { scope: rootRef },
   );
@@ -160,9 +163,8 @@ export default function SolutionsRoster({ items }: Props) {
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
-    const ink = readColor(root, 'var(--accent)');
-    const mute = readColor(root, 'var(--mute-soft)');
-    const reduced = reducedRef.current;
+    const reduced = reducedRef.current || !paintedRef.current;
+    paintedRef.current = true;
     nodes('name').forEach((el, index) => {
       const on = index === selected || index === hovered;
       gsap.to(el, {
@@ -170,14 +172,6 @@ export default function SolutionsRoster({ items }: Props) {
         duration: reduced ? 0 : 0.3,
         ease: 'power1.inOut',
         transformOrigin: 'left center',
-        overwrite: 'auto',
-      });
-    });
-    nodes('index').forEach((el, index) => {
-      gsap.to(el, {
-        color: index === selected ? ink : mute,
-        duration: reduced ? 0 : 0.3,
-        ease: 'power1.inOut',
         overwrite: 'auto',
       });
     });
@@ -265,14 +259,10 @@ export default function SolutionsRoster({ items }: Props) {
               nodes('row')[next]?.focus();
             }}
           >
-            <span className="solution-roster__index" data-roster="index">
-              {item.index}
-            </span>
             <span className="solution-roster__label">
               <span className="solution-roster__name" data-roster="name">
                 {item.title}
               </span>
-              <span className="solution-roster__role">{item.shortTitle}</span>
             </span>
           </button>
         ))}
@@ -341,17 +331,7 @@ export default function SolutionsRoster({ items }: Props) {
               data-index={index}
               aria-hidden={index === selected ? undefined : true}
             >
-              <div>
-                <h3>{item.title}</h3>
-                <p className="solution-roster__position">{item.shortTitle}</p>
-              </div>
-              {item.tags.length > 0 ? (
-                <ul className="solution-roster__tags">
-                  {item.tags.map((tag) => (
-                    <li key={tag}>{tag}</li>
-                  ))}
-                </ul>
-              ) : null}
+              <h3>{item.title}</h3>
               <p className="solution-roster__body">{item.body}</p>
               <a className="solution-roster__link" href={item.href}>
                 Ver solución
